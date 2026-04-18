@@ -1,0 +1,17 @@
+const get_player_input = () -> CarInput => (
+    let accelerate :: Float = 0;
+    let steer :: Float = 0;
+    if raylib_IsKeyDown(KEY_LEFT) then (
+        steer = sub[Float](steer, 1);
+    );
+    if raylib_IsKeyDown(KEY_RIGHT) then (
+        steer = add[Float](steer, 1);
+    );
+    if raylib_IsKeyDown(KEY_UP) then (
+        accelerate = add[Float](accelerate, 1);
+    );
+    if raylib_IsKeyDown(KEY_DOWN) then (
+        accelerate = sub[Float](accelerate, 1);
+    );
+    { .accelerate = accelerate, .steer = steer }
+);

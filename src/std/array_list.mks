@@ -1,0 +1,37 @@
+const ArrayList = [T] struct {
+    .buffer :: List[T],
+    .length :: UInt,
+};
+
+const ArrayList_new = [T] () -> ArrayList[T] => (
+    {
+        .buffer = empty_list[T](),
+        .length = 0,
+    }
+);
+
+const ArrayList_deinit = [T] (a :: ArrayList[T]) => (
+    free_list[T](a^.buffer);
+);
+
+const ArrayList_push = [T] (a :: &ArrayList[T], element :: T) -> () => (
+    if equal[UInt](a^.length, a^.buffer.length) then (
+        let new_capacity :: UInt = if equal[UInt](a^.buffer.length, 0) then (
+            4
+        ) else (
+            mul[UInt](a^.buffer.length, 2)
+        );
+        let new_buffer = allocate_list[T](new_capacity);
+        let T_TypeInfo = @TypeInfo(T);
+        let data_size = mul[UInt](T_TypeInfo.stride, a^.buffer.length);
+        copy_list[T](new_buffer, 0, a^.buffer, 0, a^.buffer.length);
+        free_list[T](a^.buffer);
+        a^.buffer = new_buffer;
+    );
+    list_index[T](a^.buffer, a^.length)^ = element;
+    a^.length = add[UInt](a^.length, 1);
+);
+
+const ArrayList_index = [T] (a :: &ArrayList[T], i :: UInt) -> &T => (
+    list_index[T](a^.buffer, i)
+);

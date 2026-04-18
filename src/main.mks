@@ -1,21 +1,8 @@
-const Car = struct {
-    .pos :: Vector2,
-    .vel :: Vector2,
-    .rotation :: Angle,
-    .angular_velocity :: Angle,
-};
-
-const CAR_DRIFT :: Float = 100;
-const CAR_ACCELERATION :: Float = 100;
-const CAR_AUTO_DECELERATION :: Float = 10;
-const CAR_MAX_SPEED :: Float = 150;
-const CAR_MAX_ANGLULAR_SPEED :: Angle = Angle_from_degrees(200);
-const CAR_ANGULAR_ACCELERATION :: Angle = Angle_from_degrees(400);
-
 const StateT = struct {
     .camera :: Camera2D,
     .fov :: Float,
     .player :: Car,
+    .traffic :: Traffic,
 };
 
 const State = @context StateT;
@@ -27,118 +14,14 @@ const init_state = () -> StateT => {
         .rotation = 0,
         .zoom = 1,
     },
-    .fov = 320,
-    .player = {
-        .pos = { .x = 0, .y = 0 },
-        .vel = { .x = 0, .y = 0 },
-        .rotation = Angle_from_degrees(0),
-        .angular_velocity = Angle_from_degrees(0),
-    },
+    .fov = 10,
+    .traffic = Traffic_new(),
+    .player = Car_new({ .x = 0, .y = 0 }),
 };
-
-const Car_update = (car :: &Car, input :: CarInput, delta_time :: Float) => (
-    let direction = Vector2_from_angle(car^.rotation);
-    car^.vel = Vector2_clamp_max_length(
-        Vector2_add(
-            car^.vel,
-            Vector2_mul(
-                direction,
-                mul[Float](
-                    mul[Float](input.accelerate, CAR_ACCELERATION),
-                    delta_time,
-                ),
-            ),
-        ),
-        CAR_MAX_SPEED,
-    );
-    let current_speed = Vector2_dot(car^.vel, direction);
-    car^.vel = Vector2_sub(
-        car^.vel,
-        Vector2_mul(
-            direction,
-            clamp_max[Float](
-                current_speed,
-                mul[Float](CAR_AUTO_DECELERATION, delta_time),
-            ),
-        ),
-    );
-    let side_direction = Vector2_rotate90(direction);
-    let side_vel = Vector2_dot(car^.vel, side_direction);
-    car^.vel = Vector2_sub(
-        car^.vel,
-        Vector2_mul(
-            side_direction,
-            clamp_max[Float](
-                side_vel,
-                mul[Float](CAR_DRIFT, delta_time)
-            ),
-        ),
-    );
-    let target_angular_velocity = Angle_mul(
-        CAR_MAX_ANGLULAR_SPEED,
-        mul[Float](input.steer, div[Float](current_speed, CAR_MAX_SPEED)),
-    );
-    car^.angular_velocity = Angle_add(
-        car^.angular_velocity,
-        Angle_clamp_abs(
-            Angle_sub(target_angular_velocity, car^.angular_velocity),
-            Angle_mul(CAR_ANGULAR_ACCELERATION, delta_time),
-        ),
-    );
-    car^.rotation = Angle_add(car^.rotation, Angle_mul(car^.angular_velocity, delta_time));
-    car^.pos = Vector2_add(car^.pos, Vector2_mul(car^.vel, delta_time));
-);
-
-const Car_draw = (car :: Car) => (
-    let texture = (@current Assets).textures.car;
-    let source_rect :: Rectangle = {
-        .x = 0,
-        .y = 0,
-        .width = Int_to_Float(texture.width),
-        .height = Int_to_Float(texture.height),
-    };
-    let dest_rect = source_rect;
-    dest_rect.x = add[Float](dest_rect.x, car.pos.x);
-    dest_rect.y = add[Float](dest_rect.y, car.pos.y);
-    let origin :: Vector2 = {
-        .x = div[Float](source_rect.width, 2),
-        .y = div[Float](source_rect.height, 2),
-    };
-    raylib_DrawTexturePro(
-        texture,
-        source_rect,
-        dest_rect,
-        origin,
-        Angle_degrees(car.rotation),
-        WHITE,
-    );
-);
-
-const CarInput = struct {
-    .accelerate :: Float, # -1..1
-    .steer :: Float, # -1..+1
-};
-
-const get_player_input = () -> CarInput => (
-    let accelerate :: Float = 0;
-    let steer :: Float = 0;
-    if raylib_IsKeyDown(KEY_LEFT) then (
-        steer = sub[Float](steer, 1);
-    );
-    if raylib_IsKeyDown(KEY_RIGHT) then (
-        steer = add[Float](steer, 1);
-    );
-    if raylib_IsKeyDown(KEY_UP) then (
-        accelerate = add[Float](accelerate, 1);
-    );
-    if raylib_IsKeyDown(KEY_DOWN) then (
-        accelerate = sub[Float](accelerate, 1);
-    );
-    { .accelerate = accelerate, .steer = steer }
-);
 
 const update = (delta_time :: Float) => (
     let state = &(@current State);
+    Traffic_update(&state^.traffic, delta_time);
     Car_update(&state^.player, get_player_input(), delta_time);
 );
 
@@ -146,6 +29,7 @@ const draw = () => (
     let state = &(@current State);
     state^.camera.offset.x = div[Float](Int_to_Float(raylib_GetRenderWidth()), 2);
     state^.camera.offset.y = div[Float](Int_to_Float(raylib_GetRenderHeight()), 2);
+    state^.camera.target = state^.player.pos;
     state^.camera.zoom = div[Float](Int_to_Float(raylib_GetRenderHeight()), state^.fov);
     raylib_BeginMode2D(state^.camera);
     raylib_ClearBackground(
@@ -156,7 +40,8 @@ const draw = () => (
             .a = 255,
         }
     );
-    Car_draw(state^.player);
+    Traffic_draw(&state^.traffic);
+    Car_draw(&state^.player);
     raylib_EndMode2D();
 );
 

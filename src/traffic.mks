@@ -1,0 +1,68 @@
+const TrafficCar = struct {
+    .car :: Car,
+};
+
+const TrafficCar_new = (pos :: Vector2) -> TrafficCar => (
+    let car = Car_new(pos);
+    { .car = car }
+);
+
+const Traffic = struct {
+    .cars :: ArrayList[TrafficCar],
+};
+
+const Traffic_new = () -> Traffic => (
+    let cars = ArrayList_new[TrafficCar]();
+    let grid_size :: Int = 10;
+    let i = neg[Int](grid_size);
+    unwindable loop_i @loop (
+        if greater[Int](i, grid_size) then (
+            unwind loop_i with ();
+        );
+        let j = neg[Int](grid_size);
+        unwindable loop_j @loop (
+            if greater[Int](j, grid_size) then (
+                unwind loop_j with ();
+            );
+            if not(@"and"(equal[Int](i, 0), equal[Int](j, 0))) then (
+                let pos :: Vector2 = {
+                    .x = Int_to_Float(i),
+                    .y = Int_to_Float(j),
+                };
+                let car = TrafficCar_new(pos);
+                ArrayList_push[TrafficCar](&cars, car);
+            );
+            j = add[Int](j, 2);
+        );
+        i = add[Int](i, 2);
+    );
+    { .cars = cars }
+);
+
+const Traffic_update = (traffic :: &Traffic, delta_time :: Float) => (
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if greater_or_equal[UInt](i, traffic^.cars.length) then (
+            unwind loop with ();
+        );
+        let car = ArrayList_index[TrafficCar](&traffic^.cars, i);
+        let car_input :: CarInput = {
+            .accelerate = 0,
+            .steer = 0,
+        };
+        Car_update(&car^.car, car_input, delta_time);
+        i = add[UInt](i, 1);
+    );
+);
+
+const Traffic_draw = (traffic :: &Traffic) => (
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if greater_or_equal[UInt](i, traffic^.cars.length) then (
+            unwind loop with ();
+        );
+        let car = ArrayList_index[TrafficCar](&traffic^.cars, i);
+        Car_draw(&car^.car);
+        i = add[UInt](i, 1);
+    );
+);

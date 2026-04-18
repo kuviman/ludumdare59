@@ -43,3 +43,15 @@ const Math_sqrt = (x :: Float) -> Float => (
 const Int_to_Float = (x :: Int) -> Float => (
     @native "(float) \(x)"
 );
+
+const not = (b :: Bool) -> Bool => (
+    @native "!\(b)"
+);
+
+const @"and" = (a :: Bool, b :: Bool) -> Bool => (
+    @native "\(a) && \(b)"
+);
+
+const @"or" = (a :: Bool, b :: Bool) -> Bool => (
+    @native "\(a) || \(b)"
+);

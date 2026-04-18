@@ -1,3 +1,5 @@
+const PIXELS_PER_UNIT :: Float = 32;
+
 const TextureAssets = struct {
     .car :: Texture,
 };
