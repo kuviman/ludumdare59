@@ -126,3 +126,7 @@ const raylib_GetRenderHeight = () -> Int => (
 const raylib_GetFrameTime = () -> Float => (
     @native "GetFrameTime()"
 );
+
+const raylib_DrawFPS = (pos_x :: Int, pos_y :: Int) => (
+    @native "DrawFPS(\(pos_x), \(pos_y))"
+);

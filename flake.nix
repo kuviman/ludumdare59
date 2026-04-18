@@ -25,6 +25,7 @@
             raylib
             emscripten
             caddy
+            butler
           ];
           shellHook = ''
             echo Hello from Kast dev shell

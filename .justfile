@@ -17,9 +17,10 @@ compile-c:
         -o target/main
 
 compile-emscripten:
+    mkdir -p target/web
     emcc target/main.c \
         $RAYLIB_WEB \
-        -o target/index.html \
+        -o target/web/index.html \
         -I. -I $RAYLIB/include \
         -Os \
         -s USE_GLFW=3 \
@@ -33,7 +34,7 @@ compile-emscripten:
 serve-web:
     caddy file-server \
         --listen 127.0.0.1:8081 \
-        --root target
+        --root target/web
 
 build:
     just compile-mks
@@ -43,11 +44,15 @@ build-web:
     just compile-mks
     just compile-emscripten
 
-build-and-run:
+run:
     just build
     ./target/main
 
-build-and-run-web:
+web:
     just build-web
     just serve-web
+
+publish:
+    just build-web
+    butler push target/web kuviman/the-jam:html5
 

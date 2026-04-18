@@ -157,6 +157,7 @@ const draw = () => (
         }
     );
     Car_draw(state^.player);
+    raylib_EndMode2D();
 );
 
 const main = () => (
@@ -172,7 +173,9 @@ const main = () => (
             );
             update(raylib_GetFrameTime());
             raylib_BeginDrawing();
+            raylib_ClearBackground(BLACK);
             draw();
+            raylib_DrawFPS(0, 0);
             raylib_EndDrawing();
         );
     );
