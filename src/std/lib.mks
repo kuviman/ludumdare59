@@ -1,0 +1,4 @@
+const String_to_C_String = (s :: String) -> C_String => (
+    # TODO
+    s.contents
+);
