@@ -1,4 +1,45 @@
+const Float = type Float32;
+
 const String_to_C_String = (s :: String) -> C_String => (
     # TODO
     s.contents
+);
+
+const div = [T] (a :: T, b :: T) -> T => (
+    @native "\(a) / \(b)"
+);
+
+const neg = [T] (x :: T) -> T => (
+    @native "-\(x)"
+);
+
+const clamp = [T] (x :: T, min :: T, max :: T) -> T => (
+    if less[T](x, min) then (
+        min
+    ) else if greater[T](x, max) then (
+        max
+    ) else (
+        x
+    )
+);
+
+const clamp_max = [T] (x :: T, max :: T) -> T => (
+    clamp[T](x, neg[T](max), max)
+);
+
+const Math_sin = (x :: Float) -> Float => (
+    @native "#include <math.h>";
+    @native "sin(\(x))"
+);
+
+const Math_cos = (x :: Float) -> Float => (
+    @native "cos(\(x))"
+);
+
+const Math_sqrt = (x :: Float) -> Float => (
+    @native "sqrt(\(x))"
+);
+
+const Int_to_Float = (x :: Int) -> Float => (
+    @native "(float) \(x)"
 );

@@ -1,0 +1,61 @@
+# this is in raylib
+@native
+const Vector2 = struct {
+    .x :: Float,
+    .y :: Float,
+};
+
+const Vector2_add = (a :: Vector2, b :: Vector2) -> Vector2 => {
+    .x = add[Float](a.x, b.x),
+    .y = add[Float](a.y, b.y),
+};
+
+const Vector2_sub = (a :: Vector2, b :: Vector2) -> Vector2 => {
+    .x = sub[Float](a.x, b.x),
+    .y = sub[Float](a.y, b.y),
+};
+
+const Vector2_mul = (v :: Vector2, k :: Float) -> Vector2 => {
+    .x = mul[Float](v.x, k),
+    .y = mul[Float](v.y, k),
+};
+
+const Vector2_from_angle = (a :: Angle) -> Vector2 => {
+    .x = Angle_cos(a),
+    .y = Angle_sin(a),
+};
+
+const Vector2_dot = (a :: Vector2, b :: Vector2) -> Float => (
+    add[Float](
+        mul[Float](a.x, b.x),
+        mul[Float](a.y, b.y),
+    )
+);
+
+const Vector2_length = (v :: Vector2) -> Float => (
+    Math_sqrt(Vector2_dot(v, v))
+);
+
+const Vector2_clamp_max_length = (
+    v :: Vector2,
+    max_length :: Float,
+) -> Vector2 => (
+    let length = Vector2_length(v);
+    if greater[Float](length, max_length) then (
+        Vector2_mul(v, div[Float](max_length, length))
+    ) else (
+        v
+    )
+);
+
+const Vector2_rotate90 = (v :: Vector2) -> Vector2 => (
+    { .x = neg[Float](v.y), .y = v.x }
+);
+
+const Vector2_print = (v :: Vector2) => (
+    print_String("{ ");
+    print_Float(v.x);
+    print_String(", ");
+    print_Float(v.y);
+    print_String(" }");
+);

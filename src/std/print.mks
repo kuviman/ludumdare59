@@ -1,0 +1,12 @@
+const print_String = (s :: String) => (
+    @native "#include <stdio.h>";
+    @native "printf(\"%s\", \(s.contents))"
+);
+
+const print_Float = (x :: Float) => (
+    @native "printf(\"%f\", \(x))"
+);
+
+const print_Int = (x :: Int) => (
+    @native "printf(\"%d\", \(x))"
+);

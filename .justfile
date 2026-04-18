@@ -12,6 +12,7 @@ compile-mks:
 
 compile-c:
     gcc target/main.c \
+        -lm \
         -lraylib \
         -o target/main
 

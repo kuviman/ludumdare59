@@ -1,0 +1,46 @@
+@native
+const PI :: Float;
+
+const Angle = struct {
+    .degrees :: Float,
+};
+
+const Angle_radians = (angle :: Angle) -> Float => (
+    mul[Float](angle.degrees, div[Float](PI, 180))
+);
+
+const Angle_degrees = (angle :: Angle) -> Float => (
+    angle.degrees
+);
+
+const Angle_from_degrees = (degrees :: Float) -> Angle => (
+    { .degrees = degrees }
+);
+
+const Angle_from_radians = (radians :: Float) -> Angle => (
+    { .degrees = mul[Float](radians, div[Float](180, PI)) }
+);
+
+const Angle_cos = (angle :: Angle) -> Float => (
+    Math_cos(Angle_radians(angle))
+);
+
+const Angle_sin = (angle :: Angle) -> Float => (
+    Math_sin(Angle_radians(angle))
+);
+
+const Angle_add = (a :: Angle, b :: Angle) -> Angle => (
+    { .degrees = add[Float](a.degrees, b.degrees) }
+);
+
+const Angle_sub = (a :: Angle, b :: Angle) -> Angle => (
+    { .degrees = sub[Float](a.degrees, b.degrees) }
+);
+
+const Angle_mul = (a :: Angle, x :: Float) -> Angle => (
+    { .degrees = mul[Float](a.degrees, x) }
+);
+
+const Angle_clamp_abs = (a :: Angle, max :: Angle) -> Angle => (
+    { .degrees = clamp_max[Float](a.degrees, max.degrees) }
+);

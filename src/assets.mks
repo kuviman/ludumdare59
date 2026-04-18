@@ -1,0 +1,21 @@
+const TextureAssets = struct {
+    .car :: Texture,
+};
+
+const AssetsT = struct {
+    .textures :: TextureAssets,
+};
+
+const Assets = @context AssetsT;
+
+const load_texture = (path :: String) -> Texture => (
+    raylib_LoadTexture(path)
+);
+
+const load_assets = () -> AssetsT => (
+    {
+        .textures = {
+            .car = load_texture("assets/textures/car.png"),
+        },
+    }
+);

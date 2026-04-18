@@ -21,7 +21,7 @@
             fd
             gcc
             clang
-            boehmgc
+            # boehmgc
             raylib
             emscripten
             caddy
