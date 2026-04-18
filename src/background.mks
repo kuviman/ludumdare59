@@ -1,0 +1,86 @@
+# TODO this is here because bug in minikast
+const State = @context StateT;
+
+const draw_background_texture = (texture :: Texture, dest_rect :: Rectangle) => unwindable fn (
+    if less[Float](dest_rect.width, 0) then (
+        unwind fn with ();
+    );
+    let source_rect :: Rectangle = {
+        .x = mul[Float](dest_rect.x, PIXELS_PER_UNIT),
+        .y = mul[Float](dest_rect.y, PIXELS_PER_UNIT),
+        .width = mul[Float](dest_rect.width, PIXELS_PER_UNIT),
+        .height = mul[Float](dest_rect.height, PIXELS_PER_UNIT),
+    };
+    raylib_DrawTexturePro(
+        texture,
+        source_rect,
+        dest_rect,
+        { .x = 0, .y = 0 },
+        0,
+        WHITE,
+    );
+);
+
+const draw_background = () => (
+    let assets = &(@current Assets);
+    let camera = (@current State).camera;
+    let screen_width = raylib_GetRenderWidth();
+    let screen_height = raylib_GetRenderHeight();
+    let top_left = raylib_GetScreenToWorld2D(
+        { .x = 0, .y = 0 },
+        camera,
+    );
+    let bottom_right = raylib_GetScreenToWorld2D(
+        {
+            .x = Int_to_Float(screen_width),
+            .y = Int_to_Float(screen_height),
+        },
+        camera,
+    );
+    draw_background_texture(
+        assets^.textures.road,
+        {
+            .x = top_left.x,
+            .y = top_left.y,
+            .width = sub[Float](bottom_right.x, top_left.x),
+            .height = sub[Float](bottom_right.y, top_left.y),
+        }
+    );
+    draw_background_texture(
+        assets^.textures.grass,
+        {
+            .x = top_left.x,
+            .y = top_left.y,
+            .width = sub[Float](min[Float](bottom_right.x, neg[Float](ROAD_RADIUS)), top_left.x),
+            .height = sub[Float](bottom_right.y, top_left.y),
+        }
+    );
+    draw_background_texture(
+        assets^.textures.grass,
+        {
+            .x = max[Float](top_left.x, ROAD_RADIUS),
+            .y = top_left.y,
+            .width = sub[Float](bottom_right.x, top_left.x),
+            .height = sub[Float](bottom_right.y, top_left.y),
+        }
+    );
+    let road_border_width = div[Float](Int_to_Float(assets^.textures.road_border.width), PIXELS_PER_UNIT);
+    draw_background_texture(
+        assets^.textures.road_border,
+        {
+            .x = neg[Float](ROAD_RADIUS),
+            .y = top_left.y,
+            .width = road_border_width,
+            .height = sub[Float](bottom_right.y, top_left.y),
+        }
+    );
+    draw_background_texture(
+        assets^.textures.road_border,
+        {
+            .x = sub[Float](ROAD_RADIUS, road_border_width),
+            .y = top_left.y,
+            .width = road_border_width,
+            .height = sub[Float](bottom_right.y, top_left.y),
+        }
+    );
+);

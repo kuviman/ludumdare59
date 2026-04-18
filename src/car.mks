@@ -8,10 +8,11 @@ const Car = struct {
 const Car_new = (pos :: Vector2) -> Car => {
     .pos = pos,
     .vel = { .x = 0, .y = 0 },
-    .rotation = Angle_from_degrees(0),
+    .rotation = Angle_from_degrees(neg[Float](90)),
     .angular_velocity = Angle_from_degrees(0),
 };
 
+const CAR_RADIUS :: Float = 0.5;
 const CAR_DRIFT :: Float = 4;
 const CAR_ACCELERATION :: Float = 4;
 const CAR_AUTO_DECELERATION :: Float = 0.2;

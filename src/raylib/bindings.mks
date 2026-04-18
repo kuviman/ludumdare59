@@ -130,3 +130,7 @@ const raylib_GetFrameTime = () -> Float => (
 const raylib_DrawFPS = (pos_x :: Int, pos_y :: Int) => (
     @native "DrawFPS(\(pos_x), \(pos_y))"
 );
+
+const raylib_GetScreenToWorld2D = (pos :: Vector2, camera :: Camera2D) -> Vector2 => (
+    @native "GetScreenToWorld2D(\(pos), \(camera))"
+);

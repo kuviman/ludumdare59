@@ -39,6 +39,10 @@ const clamp_abs = [T] (x :: T, max :: T) -> T => (
     clamp[T](x, neg[T](max), max)
 );
 
+const abs = [T] (x :: T) -> T => (
+    if less[T](x, 0) then neg[T](x) else x
+);
+
 const Math_sin = (x :: Float) -> Float => (
     @native "#include <math.h>";
     @native "sin(\(x))"

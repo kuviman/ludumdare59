@@ -18,18 +18,59 @@ const check_Car_Car_collision = (a :: &Car, b :: &Car) => unwindable fn (
     a^.vel = Vector2_sub(a^.vel, impulse);
     b^.vel = Vector2_add(b^.vel, impulse);
     let tangent = Vector2_rotate90(normal_ab);
-    let tangent_delta_vel = Vector2_dot(tangent, Vector2_sub(a^.vel, b^.vel));
-    let K :: Float = 0.01;
-    tangent_delta_vel = add[Float](tangent_delta_vel, mul[Float](Angle_degrees(a^.angular_velocity), K));
-    tangent_delta_vel = add[Float](tangent_delta_vel, mul[Float](Angle_degrees(b^.angular_velocity), K));
-    let angular_impulse = Angle_from_degrees(mul[Float](tangent_delta_vel, neg[Float](100)));
+    let tangent_delta_vel = Angle_from_radians(
+        sub[Float](
+            Vector2_dot(tangent, Vector2_sub(a^.vel, b^.vel)),
+            CAR_RADIUS
+        ),
+    );
+    tangent_delta_vel = Angle_add(tangent_delta_vel, a^.angular_velocity);
+    tangent_delta_vel = Angle_add(tangent_delta_vel, b^.angular_velocity);
+    let angular_impulse = Angle_mul(tangent_delta_vel, neg[Float](1));
     a^.angular_velocity = Angle_add(a^.angular_velocity, angular_impulse);
     b^.angular_velocity = Angle_add(b^.angular_velocity, angular_impulse);
 );
 
-const update_physics = (delta_time :: Float) => (
+const check_Car_Road_collision = (car :: &Car) => unwindable fn (
+    let normal :: Vector2 = {
+        .x = if greater[Float](car^.pos.x, 0) then neg[Float](1) else 1,
+        .y = 0,
+    };
+    let penetration = sub[Float](
+        neg[Float](Vector2_dot(car^.pos, normal)),
+        sub[Float](ROAD_RADIUS, CAR_RADIUS),
+    );
+    if less[Float](penetration, 0) then (
+        unwind fn with ();
+    );
+    car^.pos = Vector2_add(car^.pos, Vector2_mul(normal, penetration));
+    let impulse = mul[Float](Vector2_dot(car^.vel, normal), neg[Float](2));
+    if less[Float](impulse, 0) then (
+        unwind fn with ();
+    );
+    car^.vel = Vector2_add(car^.vel, Vector2_mul(normal, impulse));
+    let tangent_vel = Angle_from_radians(div[Float](Vector2_skew(car^.vel, normal), CAR_RADIUS));
+    tangent_vel = Angle_add(tangent_vel, car^.angular_velocity);
+    let angular_impulse = Angle_mul(tangent_vel, neg[Float](1));
+    car^.angular_velocity = Angle_add(car^.angular_velocity, angular_impulse);
+);
+
+const check_car_road_collisions = () => (
     let state = &(@current State);
-    # traffic - player collisions
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if greater_or_equal[UInt](i, state^.traffic.cars.length) then (
+            unwind loop with ();
+        );
+        let traffic_car = ArrayList_index[TrafficCar](&state^.traffic.cars, i);
+        check_Car_Road_collision(&traffic_car^.car);
+        i = add[UInt](i, 1);
+    );
+    check_Car_Road_collision(&state^.player);
+);
+
+const check_traffic_player_collisions = () => (
+    let state = &(@current State);
     let i :: UInt = 0;
     unwindable loop @loop (
         if greater_or_equal[UInt](i, state^.traffic.cars.length) then (
@@ -39,8 +80,11 @@ const update_physics = (delta_time :: Float) => (
         check_Car_Car_collision(&traffic_car^.car, &state^.player);
         i = add[UInt](i, 1);
     );
-    # traffic - traffic collisions
-    i = 0;
+);
+
+const check_traffic_traffic_collisions = () => (
+    let state = &(@current State);
+    let i :: UInt = 0;
     unwindable i_loop @loop (
         if greater_or_equal[UInt](i, state^.traffic.cars.length) then (
             unwind i_loop with ();
@@ -57,4 +101,10 @@ const update_physics = (delta_time :: Float) => (
         );
         i = add[UInt](i, 1);
     );
+);
+
+const update_physics = (delta_time :: Float) => (
+    check_car_road_collisions();
+    check_traffic_player_collisions();
+    check_traffic_traffic_collisions();
 );
