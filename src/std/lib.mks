@@ -23,7 +23,19 @@ const clamp = [T] (x :: T, min :: T, max :: T) -> T => (
     )
 );
 
-const clamp_max = [T] (x :: T, max :: T) -> T => (
+const max = [T] (a :: T, b :: T) -> T => (
+    if greater[T](a, b) then a else b
+);
+
+const min = [T] (a :: T, b :: T) -> T => (
+    if less[T](a, b) then a else b
+);
+
+const clamp_min = [T] (x :: T, min :: T) -> T => (
+    max[T](x, min)
+);
+
+const clamp_abs = [T] (x :: T, max :: T) -> T => (
     clamp[T](x, neg[T](max), max)
 );
 

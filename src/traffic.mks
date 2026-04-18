@@ -1,10 +1,11 @@
 const TrafficCar = struct {
     .car :: Car,
+    .target :: Vector2,
 };
 
 const TrafficCar_new = (pos :: Vector2) -> TrafficCar => (
     let car = Car_new(pos);
-    { .car = car }
+    { .car = car, .target = pos }
 );
 
 const Traffic = struct {
@@ -39,6 +40,31 @@ const Traffic_new = () -> Traffic => (
     { .cars = cars }
 );
 
+const TrafficCar_update = (car :: &TrafficCar, delta_time :: Float) => (
+    let until_target = sub[Float](car^.car.pos.y, car^.target.y);
+    if less[Float](until_target, 1) then (
+        let DX :: Float = 3;
+        let DY :: Float = 10;
+        car^.target.x = add[Float](car^.car.pos.x, random_Float_range(neg[Float](DX), DX));
+        car^.target.y = sub[Float](car^.car.pos.y, DY);
+    );
+    let delta_pos = Vector2_sub(car^.target, car^.car.pos);
+    let dir_to_target = Vector2_normalize(delta_pos);
+    let dir = Vector2_from_angle(car^.car.rotation);
+    let car_input :: CarInput = {
+        .accelerate = (
+            let target_speed = clamp_min[Float](
+                div[Float](Vector2_dot(dir, dir_to_target), 2),
+                0.25,
+            );
+            let current_speed = div[Float](Vector2_length(car^.car.vel), CAR_MAX_SPEED);
+            sub[Float](target_speed, current_speed)
+        ),
+        .steer = Vector2_skew(dir, dir_to_target),
+    };
+    Car_update(&car^.car, car_input, delta_time);
+);
+
 const Traffic_update = (traffic :: &Traffic, delta_time :: Float) => (
     let i :: UInt = 0;
     unwindable loop @loop (
@@ -46,11 +72,7 @@ const Traffic_update = (traffic :: &Traffic, delta_time :: Float) => (
             unwind loop with ();
         );
         let car = ArrayList_index[TrafficCar](&traffic^.cars, i);
-        let car_input :: CarInput = {
-            .accelerate = 0,
-            .steer = 0,
-        };
-        Car_update(&car^.car, car_input, delta_time);
+        TrafficCar_update(car, delta_time);
         i = add[UInt](i, 1);
     );
 );

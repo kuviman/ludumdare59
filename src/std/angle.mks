@@ -42,5 +42,5 @@ const Angle_mul = (a :: Angle, x :: Float) -> Angle => (
 );
 
 const Angle_clamp_abs = (a :: Angle, max :: Angle) -> Angle => (
-    { .degrees = clamp_max[Float](a.degrees, max.degrees) }
+    { .degrees = clamp_abs[Float](a.degrees, max.degrees) }
 );

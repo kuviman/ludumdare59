@@ -39,7 +39,7 @@ const Car_update = (car :: &Car, input :: CarInput, delta_time :: Float) => (
         car^.vel,
         Vector2_mul(
             direction,
-            clamp_max[Float](
+            clamp_abs[Float](
                 current_speed,
                 mul[Float](CAR_AUTO_DECELERATION, delta_time),
             ),
@@ -51,7 +51,7 @@ const Car_update = (car :: &Car, input :: CarInput, delta_time :: Float) => (
         car^.vel,
         Vector2_mul(
             side_direction,
-            clamp_max[Float](
+            clamp_abs[Float](
                 side_vel,
                 mul[Float](CAR_DRIFT, delta_time)
             ),

@@ -37,6 +37,13 @@ const Vector2_dot = (a :: Vector2, b :: Vector2) -> Float => (
     )
 );
 
+const Vector2_skew = (a :: Vector2, b :: Vector2) -> Float => (
+    sub[Float](
+        mul[Float](a.x, b.y),
+        mul[Float](a.y, b.x),
+    )
+);
+
 const Vector2_length = (v :: Vector2) -> Float => (
     Math_sqrt(Vector2_dot(v, v))
 );

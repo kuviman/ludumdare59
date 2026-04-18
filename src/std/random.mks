@@ -1,0 +1,7 @@
+const random_Float = () -> Float => (
+    @native "(float)rand() / (float)RAND_MAX"
+);
+
+const random_Float_range = (min :: Float, max :: Float) -> Float => (
+    add[Float](min, mul[Float](random_Float(), sub[Float](max, min)))
+);
