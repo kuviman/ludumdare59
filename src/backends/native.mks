@@ -1,0 +1,8 @@
+const main_loop = (frame :: () -> ()) => (
+    unwindable loop @loop (
+        if raylib_WindowShouldClose() then (
+            unwind loop with ();
+        );
+        frame();
+    );
+);

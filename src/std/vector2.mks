@@ -20,6 +20,11 @@ const Vector2_mul = (v :: Vector2, k :: Float) -> Vector2 => {
     .y = mul[Float](v.y, k),
 };
 
+const Vector2_div = (v :: Vector2, k :: Float) -> Vector2 => {
+    .x = div[Float](v.x, k),
+    .y = div[Float](v.y, k),
+};
+
 const Vector2_from_angle = (a :: Angle) -> Vector2 => {
     .x = Angle_cos(a),
     .y = Angle_sin(a),
@@ -46,6 +51,10 @@ const Vector2_clamp_max_length = (
     ) else (
         v
     )
+);
+
+const Vector2_normalize = (v :: Vector2) -> Vector2 => (
+    Vector2_div(v, Vector2_length(v))
 );
 
 const Vector2_rotate90 = (v :: Vector2) -> Vector2 => (

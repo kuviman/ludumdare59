@@ -1,0 +1,19 @@
+const main_loop = (frame :: () -> ()) => (
+    unwindable loop @loop (
+        if raylib_WindowShouldClose() then (
+            unwind loop with ();
+        );
+        frame();
+    );
+);
+(# TODO
+const frame_impl = @call "C" (ctx :: &Any) => (
+    @native "frame_fn(\(ctx))";
+);
+
+const main_loop = (_frame :: () -> ()) => (
+    @native "include <emscripten.h>";
+    @native "emscripten_set_main_loop_arg(frame_impl_fn, \(@context), 0, true)";
+);
+#)
+

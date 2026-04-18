@@ -1,13 +1,14 @@
 default:
     just --list
 
-compile-mks:
+compile-mks backend:
     mkdir -p target
     kast mini compile \
         --target c \
         --prepend $KAST_PATH/mini/backends/c/runtime.c \
         $KAST_PATH/mini/backends/c/runtime.mks \
-        $(fd --extension mks) \
+        $(fd --extension mks --exclude '**/backends/*') \
+        src/backends/{{backend}}.mks \
         > target/main.c
 
 compile-c:
@@ -37,11 +38,11 @@ serve-web:
         --root target/web
 
 build:
-    just compile-mks
+    just compile-mks native
     just compile-c
 
 build-web:
-    just compile-mks
+    just compile-mks emscripten
     just compile-emscripten
 
 run:

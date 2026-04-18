@@ -23,6 +23,7 @@ const update = (delta_time :: Float) => (
     let state = &(@current State);
     Traffic_update(&state^.traffic, delta_time);
     Car_update(&state^.player, get_player_input(), delta_time);
+    update_physics(delta_time);
 );
 
 const draw = () => (
@@ -45,23 +46,20 @@ const draw = () => (
     raylib_EndMode2D();
 );
 
+const frame = () => (
+    update(raylib_GetFrameTime());
+    raylib_BeginDrawing();
+    raylib_ClearBackground(BLACK);
+    draw();
+    raylib_DrawFPS(0, 0);
+    raylib_EndDrawing();
+);
+
 const main = () => (
     raylib_InitWindow(800, 600, "LudumDare 59");
     @native "SetWindowState(FLAG_WINDOW_RESIZABLE)";
     # @native "SetWindowState(FLAG_WINDOW_RESIZABLE | FLAG_BORDERLESS_WINDOWED_MODE)";
     with Assets = load_assets();
     with State = init_state();
-    unwindable main_loop (
-        @loop (
-            if raylib_WindowShouldClose() then (
-                unwind main_loop with ();
-            );
-            update(raylib_GetFrameTime());
-            raylib_BeginDrawing();
-            raylib_ClearBackground(BLACK);
-            draw();
-            raylib_DrawFPS(0, 0);
-            raylib_EndDrawing();
-        );
-    );
+    main_loop(frame);
 );

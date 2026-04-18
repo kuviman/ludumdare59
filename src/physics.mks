@@ -1,0 +1,60 @@
+const check_Car_Car_collision = (a :: &Car, b :: &Car) => unwindable fn (
+    let delta_pos_ab = Vector2_sub(b^.pos, a^.pos);
+    let dist = Vector2_length(delta_pos_ab);
+    let D :: Float = 1;
+    if greater[Float](dist, D) then (
+        unwind fn with ();
+    );
+    let penetration = sub[Float](D, dist);
+    let normal_ab = Vector2_normalize(delta_pos_ab);
+    let shift = div[Float](penetration, 2);
+    a^.pos = Vector2_sub(a^.pos, Vector2_mul(normal_ab, shift));
+    b^.pos = Vector2_add(b^.pos, Vector2_mul(normal_ab, shift));
+    let delta_vel_ab = Vector2_dot(Vector2_sub(a^.vel, b^.vel), normal_ab);
+    if less[Float](delta_vel_ab, 0) then (
+        unwind fn with ();
+    );
+    let impulse = Vector2_mul(normal_ab, delta_vel_ab);
+    a^.vel = Vector2_sub(a^.vel, impulse);
+    b^.vel = Vector2_add(b^.vel, impulse);
+    let tangent = Vector2_rotate90(normal_ab);
+    let tangent_delta_vel = Vector2_dot(tangent, Vector2_sub(a^.vel, b^.vel));
+    let K :: Float = 0.01;
+    tangent_delta_vel = add[Float](tangent_delta_vel, mul[Float](Angle_degrees(a^.angular_velocity), K));
+    tangent_delta_vel = add[Float](tangent_delta_vel, mul[Float](Angle_degrees(b^.angular_velocity), K));
+    let angular_impulse = Angle_from_degrees(mul[Float](tangent_delta_vel, neg[Float](100)));
+    a^.angular_velocity = Angle_add(a^.angular_velocity, angular_impulse);
+    b^.angular_velocity = Angle_add(b^.angular_velocity, angular_impulse);
+);
+
+const update_physics = (delta_time :: Float) => (
+    let state = &(@current State);
+    # traffic - player collisions
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if greater_or_equal[UInt](i, state^.traffic.cars.length) then (
+            unwind loop with ();
+        );
+        let traffic_car = ArrayList_index[TrafficCar](&state^.traffic.cars, i);
+        check_Car_Car_collision(&traffic_car^.car, &state^.player);
+        i = add[UInt](i, 1);
+    );
+    # traffic - traffic collisions
+    i = 0;
+    unwindable i_loop @loop (
+        if greater_or_equal[UInt](i, state^.traffic.cars.length) then (
+            unwind i_loop with ();
+        );
+        let a = ArrayList_index[TrafficCar](&state^.traffic.cars, i);
+        let j :: UInt = 0;
+        unwindable j_loop @loop (
+            if greater_or_equal[UInt](j, i) then (
+                unwind j_loop with ();
+            );
+            let b = ArrayList_index[TrafficCar](&state^.traffic.cars, j);
+            check_Car_Car_collision(&a^.car, &b^.car);
+            j = add[UInt](j, 1);
+        );
+        i = add[UInt](i, 1);
+    );
+);
