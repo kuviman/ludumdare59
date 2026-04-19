@@ -35,3 +35,25 @@ const ArrayList_push = [T] (a :: &ArrayList[T], element :: T) -> () => (
 const ArrayList_index = [T] (a :: &ArrayList[T], i :: UInt) -> &T => (
     list_index[T](a^.buffer, i)
 );
+
+const ArrayList_swap_remove = [T] (a :: &ArrayList[T], i :: UInt) -> T => (
+    let result = ArrayList_index[T](a, i)^;
+    let last = ArrayList_index[T](a, sub[UInt](a^.length, 1))^;
+    ArrayList_index[T](a, i)^ = last;
+    a^.length = sub[UInt](a^.length, 1);
+    result
+);
+
+const ArrayList_retain = [T] (a :: &ArrayList[T], predicate :: (T) -> Bool) => (
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if equal[UInt](i, a^.length) then (
+            unwind loop with ();
+        );
+        if predicate(ArrayList_index[T](a, i)^) then (
+            i = add[UInt](i, 1);
+        ) else (
+            ArrayList_swap_remove[T](a, i);
+        );
+    );
+);

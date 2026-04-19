@@ -10,36 +10,12 @@ const TrafficCar_new = (pos :: Vector2) -> TrafficCar => (
 
 const Traffic = struct {
     .cars :: ArrayList[TrafficCar],
+    .spawn_pos :: Float,
 };
 
 const Traffic_new = () -> Traffic => (
     let cars = ArrayList_new[TrafficCar]();
-    let grid_size :: Int = 10;
-    let i = neg[Int](grid_size);
-    unwindable loop_i @loop (
-        if greater[Int](i, grid_size) then (
-            unwind loop_i with ();
-        );
-        let j = neg[Int](grid_size);
-        unwindable loop_j @loop (
-            if greater[Int](j, grid_size) then (
-                unwind loop_j with ();
-            );
-            if not(@"and"(equal[Int](i, 0), equal[Int](j, 0))) then (
-                let pos :: Vector2 = {
-                    .x = Int_to_Float(i),
-                    .y = Int_to_Float(j),
-                };
-                if less[Float](abs[Float](pos.x), sub[Float](ROAD_RADIUS, CAR_RADIUS)) then (
-                    let car = TrafficCar_new(pos);
-                    ArrayList_push[TrafficCar](&cars, car);
-                );
-            );
-            j = add[Int](j, 2);
-        );
-        i = add[Int](i, 2);
-    );
-    { .cars = cars }
+    { .cars = cars, .spawn_pos = 0 }
 );
 
 const TrafficCar_update = (car :: &TrafficCar, delta_time :: Float) => (
@@ -67,7 +43,43 @@ const TrafficCar_update = (car :: &TrafficCar, delta_time :: Float) => (
     Car_update(&car^.car, car_input, delta_time);
 );
 
+const TRAFFIC_SPAWN_DISTANCE :: Float = 20;
+
+const TrafficCar_should_retain = (car :: TrafficCar) -> Bool => (
+    less[Float](
+        abs[Float](
+            sub[Float](
+                car.car.pos.y,
+                (@current State).traffic.spawn_pos,
+            )
+        ),
+        add[Float](TRAFFIC_SPAWN_DISTANCE, 2),
+    )
+);
+
 const Traffic_update = (traffic :: &Traffic, delta_time :: Float) => (
+    let player = (@current State).player;
+    if less[Float](player.pos.y, traffic^.spawn_pos) then (
+        let DX :: Float = sub[Float](ROAD_RADIUS, CAR_RADIUS);
+        let pos :: Vector2 = {
+            .x = random_Float_range(neg[Float](DX), DX),
+            .y = sub[Float](traffic^.spawn_pos, TRAFFIC_SPAWN_DISTANCE),
+        };
+        let car = TrafficCar_new(pos);
+        ArrayList_push[TrafficCar](&traffic^.cars, car);
+        traffic^.spawn_pos = sub[Float](traffic^.spawn_pos, 1);
+    );
+    if greater[Float](player.pos.y, add[Float](traffic^.spawn_pos, 2)) then (
+        let DX :: Float = sub[Float](ROAD_RADIUS, CAR_RADIUS);
+        let pos :: Vector2 = {
+            .x = random_Float_range(neg[Float](DX), DX),
+            .y = add[Float](traffic^.spawn_pos, TRAFFIC_SPAWN_DISTANCE),
+        };
+        let car = TrafficCar_new(pos);
+        ArrayList_push[TrafficCar](&traffic^.cars, car);
+        traffic^.spawn_pos = add[Float](traffic^.spawn_pos, 1);
+    );
+    ArrayList_retain[TrafficCar](&traffic^.cars, TrafficCar_should_retain);
     let i :: UInt = 0;
     unwindable loop @loop (
         if greater_or_equal[UInt](i, traffic^.cars.length) then (
