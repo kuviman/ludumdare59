@@ -31,15 +31,21 @@ const load_texture = (path :: String) -> Texture => (
     raylib_LoadTexture(path)
 );
 
+const load_repeated_texture = (path :: String) -> Texture => (
+    let texture = load_texture(path);
+    raylib_SetTextureWrap(texture, TEXTURE_WRAP_REPEAT);
+    texture
+);
+
 const load_assets = () -> AssetsT => (
     {
         .textures = {
             .car_tinted = load_texture("assets/textures/car_tinted.png"),
             .car_untinted = load_texture("assets/textures/car_untinted.png"),
             .car_wheel = load_texture("assets/textures/car_wheel.png"),
-            .road = load_texture("assets/textures/road.png"),
-            .road_border = load_texture("assets/textures/road_border.png"),
-            .grass = load_texture("assets/textures/grass.png"),
+            .road = load_repeated_texture("assets/textures/road.png"),
+            .road_border = load_repeated_texture("assets/textures/road_border.png"),
+            .grass = load_repeated_texture("assets/textures/grass.png"),
             .player_icon = load_texture("assets/textures/player_icon.png"),
         },
         .sfx = {

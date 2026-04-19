@@ -194,3 +194,13 @@ const raylib_UpdateMusicStream = (music :: Music) => (
 const raylib_SetMusicVolume = (music :: Music, volume :: Float) => (
     @native "SetMusicVolume(\(music), \(volume))"
 );
+
+@native
+const TextureWrap = @opaque_type;
+
+@native
+const TEXTURE_WRAP_REPEAT :: TextureWrap;
+
+const raylib_SetTextureWrap = (texture :: Texture, wrap :: TextureWrap) => (
+    @native "SetTextureWrap(\(texture), \(wrap))"
+);

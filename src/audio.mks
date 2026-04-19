@@ -39,9 +39,11 @@ const play_sound = (
     );
 );
 
+const GLOBAL_MUSIC_VOLUME :: Float = 0.6;
+
 const play_music = (music :: Music, volume :: Float) => (
     let ctx = &(@current AudioContext);
-    raylib_SetMusicVolume(music, volume);
+    raylib_SetMusicVolume(music, mul[Float](GLOBAL_MUSIC_VOLUME, volume));
     raylib_PlayMusicStream(music);
     ArrayList_push[Music](&ctx^.musics, music);
 );
