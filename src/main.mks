@@ -65,6 +65,7 @@ const draw = () => (
     Car_draw(&state^.player.car);
     Texticles_draw(&state^.texticles);
     raylib_EndMode2D();
+    draw_stats();
 );
 
 const frame = () => (

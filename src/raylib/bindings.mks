@@ -273,3 +273,7 @@ const raylib_MeasureTextEx = (
 const raylib_Fade = (color :: Color, alpha :: Float) -> Color => (
     @native "Fade(\(color), \(alpha))"
 );
+
+const raylib_DrawRectangleV = (pos :: Vector2, size :: Vector2, color :: Color) => (
+    @native "DrawRectangleV(\(pos), \(size), \(color))"
+);

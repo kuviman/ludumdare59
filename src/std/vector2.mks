@@ -20,6 +20,11 @@ const Vector2_mul = (v :: Vector2, k :: Float) -> Vector2 => {
     .y = mul[Float](v.y, k),
 };
 
+const Vector2_mulv = (a :: Vector2, b :: Vector2) -> Vector2 => {
+    .x = mul[Float](a.x, b.x),
+    .y = mul[Float](a.y, b.y),
+};
+
 const Vector2_div = (v :: Vector2, k :: Float) -> Vector2 => {
     .x = div[Float](v.x, k),
     .y = div[Float](v.y, k),

@@ -9,6 +9,10 @@ const div = [T] (a :: T, b :: T) -> T => (
     @native "\(a) / \(b)"
 );
 
+const rem = [T] (a :: T, b :: T) -> T => (
+    @native "\(a) % \(b)"
+);
+
 const neg = [T] (x :: T) -> T => (
     @native "-\(x)"
 );
@@ -58,6 +62,10 @@ const Math_sqrt = (x :: Float) -> Float => (
 
 const Int_to_Float = (x :: Int) -> Float => (
     @native "(float) \(x)"
+);
+
+const Float_to_Int = (x :: Float) -> Int => (
+    @native "(int) \(x)"
 );
 
 const not = (b :: Bool) -> Bool => (

@@ -1,5 +1,6 @@
 # TODO this is here because bug in minikast
 const State = @context StateT;
+const CameraContext = @context Camera2D;
 
 const AudioContextT = struct {
     .sound_effects :: ArrayList[Sound],

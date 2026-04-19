@@ -1,6 +1,6 @@
 const print_String = (s :: String) => (
     @native "#include <stdio.h>";
-    @native "printf(\"%s\", \(s.contents))"
+    @native "printf(\"%s\", \(String_to_C_String(s)))"
 );
 
 const print_Float = (x :: Float) => (
