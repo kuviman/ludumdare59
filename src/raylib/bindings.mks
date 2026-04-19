@@ -195,6 +195,10 @@ const raylib_SetMusicVolume = (music :: Music, volume :: Float) => (
     @native "SetMusicVolume(\(music), \(volume))"
 );
 
+const raylib_SetMusicPitch = (music :: Music, pitch :: Float) => (
+    @native "SetMusicPitch(\(music), \(pitch))"
+);
+
 @native
 const TextureWrap = @opaque_type;
 

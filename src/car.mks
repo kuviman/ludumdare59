@@ -4,6 +4,7 @@ const Car = struct {
     .vel :: Vector2,
     .rotation :: Angle,
     .steer :: Float,
+    .engine_volume :: Float,
     .angular_velocity :: Angle,
     .is_player :: Bool,
 };
@@ -19,6 +20,7 @@ const Car_new = (pos :: Vector2) -> Car => {
     .rotation = Angle_from_degrees(neg[Float](90)),
     .angular_velocity = Angle_from_degrees(0),
     .is_player = false,
+    .engine_volume = 0,
 };
 
 const CAR_STEER_SPEED :: Float = 2;
@@ -87,6 +89,38 @@ const Car_update = (car :: &Car, input :: CarInput, delta_time :: Float) => (
             sub[Float](input.steer, car^.steer),
             mul[Float](CAR_STEER_SPEED, delta_time),
         ),
+    );
+    if car^.is_player then (
+        let target_engine_volume = mul[Float](
+            clamp_min[Float](abs[Float](input.accelerate), 0.7),
+            2,
+        );
+        car^.engine_volume = add[Float](
+            car^.engine_volume,
+            clamp_abs[Float](
+                sub[Float](target_engine_volume, car^.engine_volume),
+                mul[Float](delta_time, 10),
+            ),
+        );
+        let normalized_vel = Vector2_div(car^.vel, CAR_MAX_SPEED);
+        let speed = abs[Float](Vector2_dot(normalized_vel, direction));
+        let drift = abs[Float](Vector2_skew(normalized_vel, direction));
+        raylib_SetMusicPitch(
+            (@current Assets).sfx.engine,
+            add[Float](1, mul[Float](speed, 1)),
+        );
+        raylib_SetMusicVolume(
+            (@current Assets).sfx.engine,
+            car^.engine_volume,
+        );
+        raylib_SetMusicPitch(
+            (@current Assets).sfx.drift,
+            add[Float](1, mul[Float](drift, 1)),
+        );
+        raylib_SetMusicVolume(
+            (@current Assets).sfx.drift,
+            mul[Float](drift, 0.5),
+        );
     );
 );
 

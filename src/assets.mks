@@ -12,6 +12,8 @@ const TextureAssets = struct {
 
 const SoundAssets = struct {
     .bonk :: Sound,
+    .drift :: Music,
+    .engine :: Music,
 };
 
 const MusicAssets = struct {
@@ -50,6 +52,8 @@ const load_assets = () -> AssetsT => (
         },
         .sfx = {
             .bonk = raylib_LoadSound("assets/sfx/bonk.wav"),
+            .drift = raylib_LoadMusicStream("assets/sfx/drift.wav"),
+            .engine = raylib_LoadMusicStream("assets/sfx/engine.wav"),
         },
         .music = {
             .traffic = raylib_LoadMusicStream("assets/music/traffic_loop.wav"),
