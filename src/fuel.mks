@@ -5,12 +5,14 @@ const FuelCan = struct {
 const FuelState = struct {
     .cans :: ArrayList[FuelCan],
     .next_spawn :: Float,
+    .next_spawn_back :: Float,
     .spawn_interval :: Float,
 };
 
 const FuelState_new = () -> FuelState => {
     .cans = ArrayList_new[FuelCan](),
     .next_spawn = 0,
+    .next_spawn_back = 0,
     .spawn_interval = 10,
 };
 
@@ -50,17 +52,9 @@ const FuelState_update = (delta_time :: Float) => (
         Fuel_spawn(1);
         state^.fuel.next_spawn = sub[Float](state^.fuel.next_spawn, state^.fuel.spawn_interval);
     );
-    if (
-        greater[Float](
-            state^.player.car.pos.y,
-            add[Float](
-                state^.fuel.next_spawn,
-                add[Float](state^.fuel.spawn_interval, 0.1),
-            ),
-        )
-    ) then (
+    if greater[Float](state^.player.car.pos.y, state^.fuel.next_spawn_back) then (
         Fuel_spawn(neg[Float](1));
-        state^.fuel.next_spawn = add[Float](state^.fuel.next_spawn, state^.fuel.spawn_interval);
+        state^.fuel.next_spawn_back = add[Float](state^.fuel.next_spawn_back, state^.fuel.spawn_interval);
     );
 );
 
