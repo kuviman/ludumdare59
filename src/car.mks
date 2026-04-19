@@ -1,4 +1,5 @@
 const Car = struct {
+    .tint :: Color,
     .pos :: Vector2,
     .vel :: Vector2,
     .rotation :: Angle,
@@ -6,6 +7,11 @@ const Car = struct {
 };
 
 const Car_new = (pos :: Vector2) -> Car => {
+    .tint = raylib_ColorFromHSV(
+        random_Float_range(0, 360),
+        random_Float_range(0, 1),
+        random_Float_range(0.5, 1),
+    ),
     .pos = pos,
     .vel = { .x = 0, .y = 0 },
     .rotation = Angle_from_degrees(neg[Float](90)),
@@ -74,12 +80,13 @@ const Car_update = (car :: &Car, input :: CarInput, delta_time :: Float) => (
 );
 
 const Car_draw = (car :: &Car) => (
-    let texture = (@current Assets).textures.car;
+    let tinted_texture = (@current Assets).textures.car_tinted;
+    let untinted_texture = (@current Assets).textures.car_untinted;
     let source_rect :: Rectangle = {
         .x = 0,
         .y = 0,
-        .width = Int_to_Float(texture.width),
-        .height = Int_to_Float(texture.height),
+        .width = Int_to_Float(tinted_texture.width),
+        .height = Int_to_Float(tinted_texture.height),
     };
     let dest_rect :: Rectangle = {
         .x = car^.pos.x,
@@ -92,7 +99,15 @@ const Car_draw = (car :: &Car) => (
         .y = div[Float](dest_rect.height, 2),
     };
     raylib_DrawTexturePro(
-        texture,
+        tinted_texture,
+        source_rect,
+        dest_rect,
+        origin,
+        Angle_degrees(car^.rotation),
+        car^.tint,
+    );
+    raylib_DrawTexturePro(
+        untinted_texture,
         source_rect,
         dest_rect,
         origin,

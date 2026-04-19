@@ -1,7 +1,8 @@
 const PIXELS_PER_UNIT :: Float = 32;
 
 const TextureAssets = struct {
-    .car :: Texture,
+    .car_tinted :: Texture,
+    .car_untinted :: Texture,
     .road :: Texture,
     .road_border :: Texture,
     .grass :: Texture,
@@ -20,7 +21,8 @@ const load_texture = (path :: String) -> Texture => (
 const load_assets = () -> AssetsT => (
     {
         .textures = {
-            .car = load_texture("assets/textures/car.png"),
+            .car_tinted = load_texture("assets/textures/car_tinted.png"),
+            .car_untinted = load_texture("assets/textures/car_untinted.png"),
             .road = load_texture("assets/textures/road.png"),
             .road_border = load_texture("assets/textures/road_border.png"),
             .grass = load_texture("assets/textures/grass.png"),

@@ -134,3 +134,7 @@ const raylib_DrawFPS = (pos_x :: Int, pos_y :: Int) => (
 const raylib_GetScreenToWorld2D = (pos :: Vector2, camera :: Camera2D) -> Vector2 => (
     @native "GetScreenToWorld2D(\(pos), \(camera))"
 );
+
+const raylib_ColorFromHSV = (hue :: Float, saturation :: Float, value :: Float) -> Color => (
+    @native "ColorFromHSV(\(hue), \(saturation), \(value))"
+);
