@@ -12,10 +12,10 @@ const update_camera = (delta_time :: Float) => (
         1,
     );
     let camera_target_pos :: Vector2 = {
-        .x = mul[Float](state^.player.pos.x, 0.1),
+        .x = mul[Float](state^.player.car.pos.x, 0.1),
         .y = add[Float](
-            state^.player.pos.y,
-            mul[Float](state^.player.vel.y, LOOKAHEAD),
+            state^.player.car.pos.y,
+            mul[Float](state^.player.car.vel.y, LOOKAHEAD),
         ),
     };
     let delta_pos = Vector2_sub(camera_target_pos, state^.camera_target);

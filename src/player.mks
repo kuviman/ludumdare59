@@ -1,3 +1,24 @@
+const Player = struct {
+    .car :: Car,
+    .fuel :: Float,
+};
+
+const Player_update = (delta_time :: Float) => (
+    let state = &(@current State);
+    let input = get_player_input();
+    if less[Float](state^.player.fuel, 0) then (
+        input.accelerate = 0;
+    );
+    Car_update(&state^.player.car, input, delta_time);
+    state^.player.fuel = max[Float](
+        sub[Float](
+            state^.player.fuel,
+            mul[Float](state^.settings.fuel_usage_speed, delta_time),
+        ),
+        0,
+    );
+);
+
 const get_player_input = () -> CarInput => (
     let accelerate :: Float = 0;
     let steer :: Float = 0;

@@ -1,6 +1,3 @@
-# TODO this is here because bug in minikast
-const State = @context StateT;
-
 const draw_background_texture = (texture :: Texture, dest_rect :: Rectangle) => unwindable fn (
     if less[Float](dest_rect.width, 0) then (
         unwind fn with ();

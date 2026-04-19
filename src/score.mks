@@ -1,0 +1,23 @@
+const Stats = struct {
+    .distance :: Float,
+    .time :: Float,
+    .damage :: Float,
+};
+
+const Stats_new = () -> Stats => {
+    .damage = 0,
+    .distance = 0,
+    .time = 0,
+};
+
+const Settings = struct {
+    .fuel_per_damage :: Float,
+    .fuel_usage_speed :: Float,
+    .fuel_capacity :: Float,
+};
+
+const Settings_default = () -> Settings => {
+    .fuel_per_damage = 1,
+    .fuel_usage_speed = 1,
+    .fuel_capacity = 60,
+};

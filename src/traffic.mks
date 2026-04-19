@@ -56,7 +56,10 @@ const TrafficCar_update = (car :: &TrafficCar, delta_time :: Float) => (
             );
             i = add[UInt](i, 1);
         );
-        Car_is_in_front(car, &state^.player)
+        Car_is_in_front(car, &state^.player.car)
+    );
+    if stop then (
+        do_honk(&car^.car);
     );
     let car_input :: CarInput = {
         .accelerate = if stop then (
@@ -82,13 +85,24 @@ const TrafficCar_update = (car :: &TrafficCar, delta_time :: Float) => (
 );
 
 const traffic_spawn_interval = () -> Float => (
-    let t = (@current State).player.pos.y;
+    let t = (@current State).player.car.pos.y;
     let avg :: Float = 1.5;
     let amp :: Float = 1;
-    add[Float](avg, mul[Float](amp, Math_sin(div[Float](t, 30))))
+    add[Float](
+        avg,
+        mul[Float](
+            amp,
+            Math_sin(
+                add[Float](
+                    div[Float](PI, 2),
+                    div[Float](t, 30)
+                )
+            ),
+        ),
+    )
 );
 
-const TRAFFIC_SPAWN_DISTANCE :: Float = 10;
+const TRAFFIC_SPAWN_DISTANCE :: Float = 20;
 
 const TrafficCar_should_retain = (car :: TrafficCar) -> Bool => (
     less[Float](
@@ -103,7 +117,7 @@ const TrafficCar_should_retain = (car :: TrafficCar) -> Bool => (
 );
 
 const Traffic_update = (traffic :: &Traffic, delta_time :: Float) => (
-    let player = (@current State).player;
+    let player = (@current State).player.car;
     if less[Float](player.pos.y, traffic^.spawn_pos) then (
         let DX :: Float = sub[Float](ROAD_RADIUS, CAR_RADIUS);
         let pos :: Vector2 = {

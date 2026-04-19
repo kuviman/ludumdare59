@@ -105,6 +105,8 @@ const BLACK :: Color;
 const WHITE :: Color;
 @native
 const RED :: Color;
+@native
+const BLUE :: Color;
 
 @native
 const Camera2D = struct {
@@ -219,4 +221,55 @@ const TEXTURE_WRAP_REPEAT :: TextureWrap;
 
 const raylib_SetTextureWrap = (texture :: Texture, wrap :: TextureWrap) => (
     @native "SetTextureWrap(\(texture), \(wrap))"
+);
+
+@native
+const Font = @opaque_type;
+
+const raylib_GetFontDefault = () -> Font => (
+    @native "GetFontDefault()"
+);
+
+const raylib_DrawTextPro = (
+    font :: Font,
+    text :: String,
+    position :: Vector2,
+    origin :: Vector2,
+    rotation :: Float,
+    font_size :: Float,
+    spacing :: Float,
+    tint :: Color,
+) => (
+    @native ''
+        DrawTextPro(
+            \(font),
+            \(String_to_C_String(text)),
+            \(position),
+            \(origin),
+            \(rotation),
+            \(font_size),
+            \(spacing),
+            \(tint)
+        )
+    ''
+);
+
+const raylib_MeasureTextEx = (
+    font :: Font,
+    text :: String,
+    font_size :: Float,
+    spacing :: Float,
+) -> Vector2 => (
+    @native ''
+        MeasureTextEx(
+            \(font),
+            \(String_to_C_String(text)),
+            \(font_size),
+            \(spacing)
+        )
+    ''
+);
+
+const raylib_Fade = (color :: Color, alpha :: Float) -> Color => (
+    @native "Fade(\(color), \(alpha))"
 );

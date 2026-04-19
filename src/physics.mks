@@ -9,16 +9,7 @@ const Car_apply_impulse = (car :: &Car, impulse :: Vector2, do_sound :: Bool) =>
         );
     );
     if do_sound then (
-        let distance = abs[Float](
-            sub[Float](car^.pos.y, state^.camera.target.y)
-        );
-        let distance_multiplier = sub[Float](1, sqr[Float](div[Float](distance, 5)));
-        let volume = clamp[Float](
-            mul[Float](intensity, distance_multiplier),
-            0,
-            1,
-        );
-        play_sound((@current Assets).sfx.bonk, 0.5, volume);
+        play_sound_at((@current Assets).sfx.bonk, car^.pos, 0.5, intensity);
     );
 );
 
@@ -90,7 +81,7 @@ const check_car_road_collisions = () => (
         check_Car_Road_collision(&traffic_car^.car);
         i = add[UInt](i, 1);
     );
-    check_Car_Road_collision(&state^.player);
+    check_Car_Road_collision(&state^.player.car);
 );
 
 const check_traffic_player_collisions = () => (
@@ -101,7 +92,7 @@ const check_traffic_player_collisions = () => (
             unwind loop with ();
         );
         let traffic_car = ArrayList_index[TrafficCar](&state^.traffic.cars, i);
-        check_Car_Car_collision(&traffic_car^.car, &state^.player);
+        check_Car_Car_collision(&traffic_car^.car, &state^.player.car);
         i = add[UInt](i, 1);
     );
 );
@@ -129,7 +120,7 @@ const check_traffic_traffic_collisions = () => (
 
 const update_physics = (delta_time :: Float) => (
     let state = &(@current State);
-    let old_player_vel = state^.player.vel;
+    let old_player_vel = state^.player.car.vel;
     check_car_road_collisions();
     check_traffic_player_collisions();
     check_traffic_traffic_collisions();

@@ -5,13 +5,16 @@ const StateT = struct {
     .screen_shake :: Float,
     .mega_honking :: Float,
     .fov :: Float,
-    .player :: Car,
+    .player :: Player,
     .traffic :: Traffic,
+    .texticles :: Texticles,
+    .settings :: Settings,
+    .stats :: Stats,
 };
 
 const ROAD_RADIUS :: Float = 6;
 
-const init_state = () -> StateT => {
+const init_state = (settings :: Settings) -> StateT => {
     .camera = {
         .offset = { .x = 0, .y = 0 },
         .target = { .x = 0, .y = 0 },
@@ -28,8 +31,11 @@ const init_state = () -> StateT => {
         let car = Car_new({ .x = 0, .y = 0 });
         car.tint = RED;
         car.is_player = true;
-        car
+        { .car = car, .fuel = settings.fuel_capacity }
     ),
+    .texticles = Texticles_new(),
+    .settings = settings,
+    .stats = Stats_new(),
 };
 
 const update = (delta_time :: Float) => (
@@ -37,12 +43,15 @@ const update = (delta_time :: Float) => (
     state^.t = add[Float](state^.t, delta_time);
     update_camera(delta_time);
     Traffic_update(&state^.traffic, delta_time);
-    Car_update(&state^.player, get_player_input(), delta_time);
+    Player_update(delta_time);
     update_physics(delta_time);
     if raylib_IsKeyPressed(KEY_SPACE) then (
         player_honk();
     );
     update_honk(delta_time);
+    Texticles_update(&state^.texticles, delta_time);
+    state^.stats.time = add[Float](state^.stats.time, delta_time);
+    state^.stats.distance = neg[Float](state^.player.car.pos.y);
 );
 
 const draw = () => (
@@ -53,7 +62,8 @@ const draw = () => (
     raylib_BeginMode2D(state^.camera);
     draw_background();
     Traffic_draw(&state^.traffic);
-    Car_draw(&state^.player);
+    Car_draw(&state^.player.car);
+    Texticles_draw(&state^.texticles);
     raylib_EndMode2D();
 );
 
@@ -74,7 +84,7 @@ const main = () => (
     # @native "SetWindowState(FLAG_WINDOW_RESIZABLE | FLAG_BORDERLESS_WINDOWED_MODE)";
     with AudioContext = init_audio();
     with Assets = load_assets();
-    with State = init_state();
+    with State = init_state(Settings_default());
     play_music((@current Assets).music.traffic, 0.5);
     play_music((@current Assets).music.radio, 0.5);
     play_music((@current Assets).sfx.drift, 0);

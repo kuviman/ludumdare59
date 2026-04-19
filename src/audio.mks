@@ -1,3 +1,6 @@
+# TODO this is here because bug in minikast
+const State = @context StateT;
+
 const AudioContextT = struct {
     .sound_effects :: ArrayList[Sound],
     .musics :: ArrayList[Music],
@@ -9,6 +12,28 @@ const init_audio = () -> AudioContextT => (
 );
 
 const AudioContext = @context AudioContextT;
+
+const play_sound_at = (
+    sound :: Sound,
+    position :: Vector2,
+    pitch_range :: Float,
+    volume :: Float,
+) => (
+    let state = &(@current State);
+    let distance = Vector2_length(
+        Vector2_sub(position, state^.player.car.pos)
+    );
+    let distance_multiplier = sub[Float](1, sqr[Float](div[Float](distance, 10)));
+    play_sound(
+        sound,
+        pitch_range,
+        clamp[Float](
+            mul[Float](volume, distance_multiplier),
+            0,
+            1,
+        ),
+    )
+);
 
 const play_sound = (
     sound :: Sound,

@@ -1,0 +1,99 @@
+# Text particle
+const Texticle = struct {
+    .text :: String,
+    .pos :: Vector2,
+    .vel :: Vector2,
+    .rotation :: Angle,
+    .w :: Angle,
+    .lifetime :: Float,
+    .color :: Color,
+    .size :: Float,
+};
+
+const Texticle_update = (texticle :: &Texticle, delta_time :: Float) => (
+    texticle^.pos = Vector2_add(texticle^.pos, Vector2_mul(texticle^.vel, delta_time));
+    texticle^.rotation = Angle_add(texticle^.rotation, Angle_mul(texticle^.w, delta_time));
+    texticle^.lifetime = sub[Float](texticle^.lifetime, delta_time);
+);
+
+const Texticle_draw = (texticle :: &Texticle) => (
+    let font = raylib_GetFontDefault();
+    let text = texticle^.text;
+    let font_size = texticle^.size;
+    let spacing = mul[Float](texticle^.size, 0.2);
+    let measured = raylib_MeasureTextEx(font, text, font_size, spacing);
+    raylib_DrawTextPro(
+        font,
+        text,
+        texticle^.pos,
+        Vector2_div(measured, 2),
+        Angle_degrees(texticle^.rotation),
+        font_size,
+        spacing,
+        raylib_Fade(texticle^.color, texticle^.lifetime),
+    );
+);
+
+const Texticles = type ArrayList[Texticle];
+
+const Texticles_new = () -> Texticles => (
+    ArrayList_new[Texticle]()
+);
+
+const Texticles_update = (texticles :: &Texticles, delta_time :: Float) => (
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if greater_or_equal[UInt](i, texticles^.length) then (
+            unwind loop with ();
+        );
+        Texticle_update(ArrayList_index[Texticle](texticles, i), delta_time);
+        i = add[UInt](i, 1);
+    );
+    ArrayList_retain[Texticle](
+        texticles,
+        (texticle :: Texticle) -> Bool => (
+            greater[Float](texticle.lifetime, 0)
+        ),
+    );
+);
+
+const Texticles_draw = (texticles :: &Texticles) => (
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if greater_or_equal[UInt](i, texticles^.length) then (
+            unwind loop with ();
+        );
+        Texticle_draw(ArrayList_index[Texticle](texticles, i));
+        i = add[UInt](i, 1);
+    );
+);
+
+const spawn_texticle = (
+    text :: String,
+    pos :: Vector2,
+    size :: Float,
+    color :: Color,
+) => (
+    let state = &(@current State);
+    let texticle :: Texticle = {
+        .text = text,
+        .pos = pos,
+        .vel = Vector2_mul(
+            {
+                .x = random_Float_range(neg[Float](1), 1),
+                .y = neg[Float](random_Float_range(1, 3)),
+            },
+            0.5,
+        ),
+        .rotation = Angle_from_degrees(
+            random_Float_range(neg[Float](10), 10)
+        ),
+        .w = Angle_from_degrees(
+            random_Float_range(neg[Float](30), 30),
+        ),
+        .lifetime = 1,
+        .color = color,
+        .size = size,
+    };
+    ArrayList_push[Texticle](&state^.texticles, texticle);
+);
