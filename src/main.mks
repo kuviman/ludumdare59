@@ -38,6 +38,7 @@ const init_state = (settings :: Settings) -> StateT => (
                 .fuel = settings.fuel_capacity,
                 .anger = 0,
                 .lost = false,
+                .played_megahonk_ready = false,
             }
         ),
         .texticles = Texticles_new(),

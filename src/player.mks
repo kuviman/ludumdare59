@@ -2,6 +2,7 @@ const Player = struct {
     .car :: Car,
     .fuel :: Float,
     .anger :: Float,
+    .played_megahonk_ready :: Bool,
     .lost :: Bool,
 };
 

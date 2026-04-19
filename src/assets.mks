@@ -8,6 +8,7 @@ const TextureAssets = struct {
     .road :: Texture,
     .road_border :: Texture,
     .grass :: Texture,
+    .fuel :: Texture,
 };
 
 const SoundAssets = struct {
@@ -20,6 +21,7 @@ const SoundAssets = struct {
     .start :: Sound,
     .fuel_pickup :: Sound,
     .lose :: Sound,
+    .mega_honk_ready :: Sound,
 };
 
 const MusicAssets = struct {
@@ -55,6 +57,7 @@ const load_assets = () -> AssetsT => (
             .road_border = load_repeated_texture("assets/textures/road_border.png"),
             .grass = load_repeated_texture("assets/textures/grass.png"),
             .player_icon = load_texture("assets/textures/player_icon.png"),
+            .fuel = load_texture("assets/textures/fuel.png"),
         },
         .sfx = {
             .bonk = raylib_LoadSound("assets/sfx/bonk.wav"),
@@ -66,6 +69,7 @@ const load_assets = () -> AssetsT => (
             .start = raylib_LoadSound("assets/sfx/car_start.wav"),
             .lose = raylib_LoadSound("assets/sfx/lose.wav"),
             .fuel_pickup = raylib_LoadSound("assets/sfx/fuel_pickup.wav"),
+            .mega_honk_ready = raylib_LoadSound("assets/sfx/megahonk_ready.wav"),
         },
         .music = {
             .traffic = raylib_LoadMusicStream("assets/music/traffic_loop.wav"),

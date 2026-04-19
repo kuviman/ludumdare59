@@ -14,6 +14,13 @@ const Car_apply_impulse = (car :: &Car, impulse :: Vector2, do_sound :: Bool) =>
             ),
             1,
         );
+        if equal[Float](state^.player.anger, 1) then (
+            if not(state^.player.played_megahonk_ready) then (
+                state^.player.played_megahonk_ready = true;
+                play_sound((@current Assets).sfx.mega_honk_ready, 0, 2);
+                state^.screen_shake = 1;
+            );
+        );
     );
     if do_sound then (
         play_sound_at((@current Assets).sfx.bonk, car^.pos, 0.5, intensity);

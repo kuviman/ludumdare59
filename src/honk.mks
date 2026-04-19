@@ -34,6 +34,7 @@ const player_honk = () => unwindable fn (
         state^.screen_shake = 1;
         state^.mega_honking = 1;
         apply_mega_honk_impulse(MEGA_HONK_IMPULSE);
+        state^.player.played_megahonk_ready = false;
         spawn_texticle(
             "MEGAHONK",
             state^.player.car.pos,
