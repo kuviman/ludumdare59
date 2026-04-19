@@ -10,7 +10,7 @@ const Car_apply_impulse = (car :: &Car, impulse :: Vector2, do_sound :: Bool) =>
         state^.player.anger = min[Float](
             add[Float](
                 state^.player.anger,
-                mul[Float](intensity, 0.05),
+                mul[Float](intensity, 0.1),
             ),
             1,
         );

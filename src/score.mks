@@ -20,74 +20,6 @@ const Settings_default = () -> Settings => {
     .fuel_capacity = 30,
 };
 
-const draw_text = (
-    text :: String,
-    pos :: Vector2,
-    align :: Vector2,
-    size :: Float,
-) => (
-    let camera = @current CameraContext;
-    let top_left = raylib_GetScreenToWorld2D(
-        { .x = 0, .y = 0 },
-        camera,
-    );
-    let bottom_right = raylib_GetScreenToWorld2D(
-        {
-            .x = Int_to_Float(raylib_GetRenderWidth()),
-            .y = Int_to_Float(raylib_GetRenderHeight()),
-        },
-        camera,
-    );
-    pos = Vector2_add(
-        Vector2_add(
-            top_left,
-            Vector2_mulv(Vector2_sub(bottom_right, top_left), align),
-        ),
-        pos,
-    );
-    let font = raylib_GetFontDefault();
-    let font_size :: Float = size;
-    let spacing :: Float = mul[Float](size, 0.1);
-    let measured = raylib_MeasureTextEx(font, text, font_size, spacing);
-    raylib_DrawTextPro(
-        font,
-        text,
-        pos,
-        Vector2_mulv(measured, align),
-        0,
-        font_size,
-        spacing,
-        BLACK,
-    );
-);
-
-const string_buffer :: String = {
-    .contents = @native "malloc(1000)",
-    .length = 0,
-};
-
-const sprint_reset = () => (
-    string_buffer.length = 0;
-);
-
-const sprint_Int = (x :: Int) => (
-    let written :: UInt = @native ''
-        sprintf(
-            \(string_buffer.contents)+ \(string_buffer.length),
-            \"%d\", \(x)
-        )'';
-    string_buffer.length = add[UInt](string_buffer.length, written);
-);
-
-const sprint_String = (s :: String) => (
-    let written :: UInt = @native ''
-        sprintf(
-            \(string_buffer.contents)+ \(string_buffer.length),
-            \"%s\", \(String_to_C_String(s))
-        )'';
-    string_buffer.length = add[UInt](string_buffer.length, written);
-);
-
 const draw_bar = (y :: Float, fill :: Float) => (
     let camera = @current CameraContext;
     let top_left = raylib_GetScreenToWorld2D(
@@ -123,16 +55,6 @@ const draw_bar = (y :: Float, fill :: Float) => (
 );
 
 const draw_stats = () => (
-    let fov :: Float = 40;
-    let camera :: Camera2D = {
-        .offset = {
-            .x = div[Float](Int_to_Float(raylib_GetRenderWidth()), 2),
-            .y = div[Float](Int_to_Float(raylib_GetRenderHeight()), 2),
-        },
-        .zoom = div[Float](Int_to_Float(raylib_GetRenderHeight()), fov),
-    };
-    with CameraContext = camera;
-    raylib_BeginMode2D(camera);
     let state = &(@current State);
     sprint_reset();
     sprint_String("Distance: ");
@@ -154,5 +76,13 @@ const draw_stats = () => (
     draw_bar(3, div[Float](state^.player.fuel, state^.settings.fuel_capacity));
     draw_text("anger", { .x = neg[Float](1), .y = neg[Float](1) }, { .x = 1, .y = 1 }, 2);
     draw_bar(1, state^.player.anger);
-    raylib_EndMode2D();
+    if equal[Float](state^.player.anger, 1) then (
+        draw_text_premium(
+            "Press SPACE",
+            { .x = neg[Float](10), .y = neg[Float](1) },
+            { .x = 1, .y = 1 },
+            1.5,
+            add[Float](1, mul[Float](0.15, Math_sin(mul[Float](state^.t, 3)))),
+        );
+    );
 );

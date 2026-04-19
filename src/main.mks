@@ -62,7 +62,9 @@ const update = (delta_time :: Float) => (
     );
     update_honk(delta_time);
     Texticles_update(&state^.texticles, delta_time);
-    state^.stats.time = add[Float](state^.stats.time, delta_time);
+    if state^.player.moved then (
+        state^.stats.time = add[Float](state^.stats.time, delta_time);
+    );
     state^.stats.distance = neg[Float](state^.player.car.pos.y);
 );
 
@@ -77,7 +79,7 @@ const draw = () => (
     Car_draw(&state^.player.car);
     Texticles_draw(&state^.texticles);
     raylib_EndMode2D();
-    draw_stats();
+    draw_ui();
 );
 
 const frame = () => (

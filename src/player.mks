@@ -4,6 +4,7 @@ const Player = struct {
     .anger :: Float,
     .played_megahonk_ready :: Bool,
     .lost :: Bool,
+    .moved :: Bool,
 };
 
 const Player_update = (delta_time :: Float) => (
@@ -19,6 +20,9 @@ const Player_update = (delta_time :: Float) => (
         state^.player.lost = false;
     );
     Car_update(&state^.player.car, input, delta_time);
+    if not_equal[Float](state^.player.car.pos.y, 0) then (
+        state^.player.moved = true;
+    );
     state^.player.fuel = max[Float](
         sub[Float](
             state^.player.fuel,
