@@ -31,7 +31,11 @@ const init_state = (settings :: Settings) -> StateT => {
         let car = Car_new({ .x = 0, .y = 0 });
         car.tint = RED;
         car.is_player = true;
-        { .car = car, .fuel = settings.fuel_capacity }
+        {
+            .car = car,
+            .fuel = settings.fuel_capacity,
+            .anger = 0,
+        }
     ),
     .texticles = Texticles_new(),
     .settings = settings,

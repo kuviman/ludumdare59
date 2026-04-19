@@ -10,7 +10,11 @@ const do_honk = (car :: &Car) => (
             (@current Assets).sfx.mid_honk
         );
         play_sound_at(sfx, car^.pos, 0.2, 1);
-        car^.honk_cooldown = random_Float_range(2, 10);
+        car^.honk_cooldown = if car^.is_player then (
+            1
+        ) else (
+            random_Float_range(2, 10)
+        );
         spawn_texticle(
             "honk",
             car^.pos,
@@ -20,22 +24,30 @@ const do_honk = (car :: &Car) => (
     );
 );
 
-const player_honk = () => (
+const player_honk = () => unwindable fn (
     let state = &(@current State);
-    play_sound((@current Assets).sfx.mega_honk, 0.1, 1);
-    state^.screen_shake = 1;
-    state^.mega_honking = 1;
-    apply_mega_honk_impulse(MEGA_HONK_IMPULSE);
-    spawn_texticle(
-        "MEGAHONK",
-        state^.player.car.pos,
-        1,
-        {
-            .r = 0,
-            .g = 0,
-            .b = 50,
-            .a = 0xff,
-        },
+    if greater[Float](state^.player.car.honk_cooldown, 0) then (
+        unwind fn with ();
+    );
+    if greater_or_equal[Float](state^.player.anger, 1) then (
+        play_sound((@current Assets).sfx.mega_honk, 0.1, 1);
+        state^.screen_shake = 1;
+        state^.mega_honking = 1;
+        apply_mega_honk_impulse(MEGA_HONK_IMPULSE);
+        spawn_texticle(
+            "MEGAHONK",
+            state^.player.car.pos,
+            1,
+            {
+                .r = 0,
+                .g = 0,
+                .b = 50,
+                .a = 0xff,
+            },
+        );
+        state^.player.anger = 0;
+    ) else (
+        do_honk(&state^.player.car);
     );
 );
 

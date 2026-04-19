@@ -1,6 +1,7 @@
 const Player = struct {
     .car :: Car,
     .fuel :: Float,
+    .anger :: Float,
 };
 
 const Player_update = (delta_time :: Float) => (

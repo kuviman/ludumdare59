@@ -155,6 +155,6 @@ const draw_stats = () => (
     draw_text("fuel", { .x = neg[Float](3), .y = neg[Float](3) }, { .x = 1, .y = 1 }, 2);
     draw_bar(3, div[Float](state^.player.fuel, state^.settings.fuel_capacity));
     draw_text("anger", { .x = neg[Float](1), .y = neg[Float](1) }, { .x = 1, .y = 1 }, 2);
-    draw_bar(1, 0);
+    draw_bar(1, state^.player.anger);
     raylib_EndMode2D();
 );

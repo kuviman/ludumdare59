@@ -7,6 +7,13 @@ const Car_apply_impulse = (car :: &Car, impulse :: Vector2, do_sound :: Bool) =>
             state^.screen_shake,
             intensity,
         );
+        state^.player.anger = min[Float](
+            add[Float](
+                state^.player.anger,
+                mul[Float](intensity, 0.05),
+            ),
+            1,
+        );
     );
     if do_sound then (
         play_sound_at((@current Assets).sfx.bonk, car^.pos, 0.5, intensity);
