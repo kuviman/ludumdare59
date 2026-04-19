@@ -1,0 +1,24 @@
+const MEGA_HONK_FORCE :: Float = 30;
+const MEGA_HONK_DISTANCE :: Float = 4;
+
+const player_honk = () => (
+    let state = &(@current State);
+    play_sound((@current Assets).sfx.mega_honk, 0.1, 1);
+    state^.screen_shake = 1;
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if greater_or_equal[UInt](i, state^.traffic.cars.length) then (
+            unwind loop with ();
+        );
+        let car = &ArrayList_index[TrafficCar](&state^.traffic.cars, i)^.car;
+        let delta_pos = Vector2_sub(car^.pos, state^.player.pos);
+        let normal = Vector2_normalize(delta_pos);
+        let distance = Vector2_length(delta_pos);
+        let impulse = mul[Float](
+            clamp[Float](sub[Float](1, div[Float](distance, MEGA_HONK_DISTANCE)), 0, 1),
+            MEGA_HONK_FORCE,
+        );
+        car^.vel = Vector2_add(car^.vel, Vector2_mul(normal, impulse));
+        i = add[UInt](i, 1);
+    );
+);

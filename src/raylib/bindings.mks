@@ -67,8 +67,12 @@ const raylib_CloseWindow = () => (
     @native "CloseWindow()"
 );
 
-const raylib_IsKeyDown = (key :: Int) -> Bool => (
+const raylib_IsKeyDown = (key :: Key) -> Bool => (
     @native "IsKeyDown(\(key))"
+);
+
+const raylib_IsKeyPressed = (key :: Key) -> Bool => (
+    @native "IsKeyPressed(\(key))"
 );
 
 const raylib_SetTargetFPS = (fps :: Int) => (
@@ -76,16 +80,24 @@ const raylib_SetTargetFPS = (fps :: Int) => (
 );
 
 @native
-const KEY_RIGHT :: Int;
+const KeyboardKey = @opaque_type;
+
+const Key = type KeyboardKey;
 
 @native
-const KEY_LEFT :: Int;
+const KEY_RIGHT :: Key;
 
 @native
-const KEY_UP :: Int;
+const KEY_LEFT :: Key;
 
 @native
-const KEY_DOWN :: Int;
+const KEY_UP :: Key;
+
+@native
+const KEY_DOWN :: Key;
+
+@native
+const KEY_SPACE :: Key;
 
 @native
 const BLACK :: Color;

@@ -37,6 +37,9 @@ const update = (delta_time :: Float) => (
     Traffic_update(&state^.traffic, delta_time);
     Car_update(&state^.player, get_player_input(), delta_time);
     update_physics(delta_time);
+    if raylib_IsKeyPressed(KEY_SPACE) then (
+        player_honk();
+    );
 );
 
 const draw = () => (

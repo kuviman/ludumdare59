@@ -14,6 +14,8 @@ const SoundAssets = struct {
     .bonk :: Sound,
     .drift :: Music,
     .engine :: Music,
+    .honk :: Sound,
+    .mega_honk :: Sound,
 };
 
 const MusicAssets = struct {
@@ -52,6 +54,8 @@ const load_assets = () -> AssetsT => (
         },
         .sfx = {
             .bonk = raylib_LoadSound("assets/sfx/bonk.wav"),
+            .honk = raylib_LoadSound("assets/sfx/honk.wav"),
+            .mega_honk = raylib_LoadSound("assets/sfx/honk.wav"),
             .drift = raylib_LoadMusicStream("assets/sfx/drift.wav"),
             .engine = raylib_LoadMusicStream("assets/sfx/engine.wav"),
         },
