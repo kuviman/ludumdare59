@@ -41,6 +41,10 @@ const Angle_mul = (a :: Angle, x :: Float) -> Angle => (
     { .degrees = mul[Float](a.degrees, x) }
 );
 
+const Angle_div = (a :: Angle, x :: Float) -> Angle => (
+    { .degrees = div[Float](a.degrees, x) }
+);
+
 const Angle_clamp_abs = (a :: Angle, max :: Angle) -> Angle => (
     { .degrees = clamp_abs[Float](a.degrees, max.degrees) }
 );

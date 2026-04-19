@@ -1,0 +1,32 @@
+const Texture_draw = (
+    texture :: Texture,
+    pos :: Vector2,
+    rotation :: Angle,
+    normalized_origin :: Vector2,
+    tint :: Color,
+) => (
+    let source_rect :: Rectangle = {
+        .x = 0,
+        .y = 0,
+        .width = Int_to_Float(texture.width),
+        .height = Int_to_Float(texture.height),
+    };
+    let dest_rect :: Rectangle = {
+        .x = pos.x,
+        .y = pos.y,
+        .width = div[Float](source_rect.width, PIXELS_PER_UNIT),
+        .height = div[Float](source_rect.height, PIXELS_PER_UNIT),
+    };
+    let origin :: Vector2 = {
+        .x = mul[Float](dest_rect.width, normalized_origin.x),
+        .y = mul[Float](dest_rect.height, normalized_origin.y),
+    };
+    raylib_DrawTexturePro(
+        texture,
+        source_rect,
+        dest_rect,
+        origin,
+        Angle_degrees(rotation),
+        tint,
+    );
+);

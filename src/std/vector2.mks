@@ -68,6 +68,15 @@ const Vector2_rotate90 = (v :: Vector2) -> Vector2 => (
     { .x = neg[Float](v.y), .y = v.x }
 );
 
+const Vector2_rotate = (v :: Vector2, angle :: Angle) -> Vector2 => (
+    let sin = Angle_sin(angle);
+    let cos = Angle_cos(angle);
+    {
+        .x = sub[Float](mul[Float](v.x, cos), mul[Float](v.y, sin)),
+        .y = add[Float](mul[Float](v.x, sin), mul[Float](v.y, cos)),
+    }
+);
+
 const Vector2_print = (v :: Vector2) => (
     print_String("{ ");
     print_Float(v.x);

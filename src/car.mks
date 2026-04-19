@@ -3,6 +3,7 @@ const Car = struct {
     .pos :: Vector2,
     .vel :: Vector2,
     .rotation :: Angle,
+    .steer :: Float,
     .angular_velocity :: Angle,
 };
 
@@ -18,6 +19,7 @@ const Car_new = (pos :: Vector2) -> Car => {
     .angular_velocity = Angle_from_degrees(0),
 };
 
+const CAR_STEER_SPEED :: Float = 2;
 const CAR_RADIUS :: Float = 0.5;
 const CAR_DRIFT :: Float = 4;
 const CAR_ACCELERATION :: Float = 4;
@@ -77,41 +79,66 @@ const Car_update = (car :: &Car, input :: CarInput, delta_time :: Float) => (
     );
     car^.rotation = Angle_add(car^.rotation, Angle_mul(car^.angular_velocity, delta_time));
     car^.pos = Vector2_add(car^.pos, Vector2_mul(car^.vel, delta_time));
+    car^.steer = add[Float](
+        car^.steer,
+        clamp_abs[Float](
+            sub[Float](input.steer, car^.steer),
+            mul[Float](CAR_STEER_SPEED, delta_time),
+        ),
+    );
 );
 
 const Car_draw = (car :: &Car) => (
     let tinted_texture = (@current Assets).textures.car_tinted;
     let untinted_texture = (@current Assets).textures.car_untinted;
-    let source_rect :: Rectangle = {
-        .x = 0,
-        .y = 0,
-        .width = Int_to_Float(tinted_texture.width),
-        .height = Int_to_Float(tinted_texture.height),
-    };
-    let dest_rect :: Rectangle = {
-        .x = car^.pos.x,
-        .y = car^.pos.y,
-        .width = div[Float](source_rect.width, PIXELS_PER_UNIT),
-        .height = div[Float](source_rect.height, PIXELS_PER_UNIT),
-    };
-    let origin :: Vector2 = {
-        .x = div[Float](dest_rect.width, 2),
-        .y = div[Float](dest_rect.height, 2),
-    };
-    raylib_DrawTexturePro(
+    let wheel_texture = (@current Assets).textures.car_wheel;
+    let wheel_x :: Float = div[Float](7, PIXELS_PER_UNIT);
+    let wheel_y :: Float = div[Float](14, PIXELS_PER_UNIT);
+    let wheel_rotation = Angle_add(
+        car^.rotation,
+        Angle_mul(
+            Angle_from_degrees(45),
+            car^.steer,
+        ),
+    );
+    Texture_draw(
+        wheel_texture,
+        Vector2_add(
+            car^.pos,
+            Vector2_rotate(
+                { .x = wheel_x, .y = wheel_y },
+                car^.rotation,
+            ),
+        ),
+        wheel_rotation,
+        { .x = 0.5, .y = 0.5 },
+        WHITE,
+    );
+    Texture_draw(
+        wheel_texture,
+        Vector2_add(
+            car^.pos,
+            Vector2_rotate(
+                { .x = wheel_x, .y = neg[Float](wheel_y) },
+                car^.rotation,
+            ),
+        ),
+        wheel_rotation,
+        { .x = 0.5, .y = 0.5 },
+        WHITE,
+    );
+    Texture_draw(
         tinted_texture,
-        source_rect,
-        dest_rect,
-        origin,
-        Angle_degrees(car^.rotation),
+        car^.pos,
+        car^.rotation,
+        { .x = 0.5, .y = 0.5 },
         car^.tint,
     );
-    raylib_DrawTexturePro(
+    Texture_draw(
         untinted_texture,
-        source_rect,
-        dest_rect,
-        origin,
-        Angle_degrees(car^.rotation),
+        car^.pos,
+        car^.rotation,
+        { .x = 0.5, .y = 0.5 },
         WHITE,
     );
 );
