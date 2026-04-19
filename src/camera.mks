@@ -1,0 +1,43 @@
+const LOOKAHEAD :: Float = 0.8;
+const CAMERA_SPEED :: Float = 5;
+
+const update_camera = (delta_time :: Float) => (
+    let state = &(@current State);
+    state^.screen_shake = clamp[Float](
+        sub[Float](
+            state^.screen_shake,
+            mul[Float](delta_time, 2),
+        ),
+        0,
+        1,
+    );
+    let camera_target_pos :: Vector2 = {
+        .x = mul[Float](state^.player.pos.x, 0.1),
+        .y = add[Float](
+            state^.player.pos.y,
+            mul[Float](state^.player.vel.y, LOOKAHEAD),
+        ),
+    };
+    let delta_pos = Vector2_sub(camera_target_pos, state^.camera_target);
+    state^.camera_target = Vector2_add(
+        state^.camera_target,
+        Vector2_clamp_max_length(
+            Vector2_mul(delta_pos, mul[Float](CAMERA_SPEED, delta_time)),
+            Vector2_length(delta_pos),
+        ),
+    );
+    state^.camera.target = Vector2_add(
+        state^.camera_target,
+        Vector2_mul(
+            {
+                .x = Math_sin(add[Float](mul[Float](state^.t, 30), 123)),
+                .y = Math_sin(mul[Float](state^.t, 40)),
+            },
+            mul[Float](state^.screen_shake, 0.1),
+        ),
+    );
+    state^.camera.rotation = mul[Float](
+        Math_sin(add[Float](mul[Float](state^.t, 35), 7)),
+        mul[Float](state^.screen_shake, 2),
+    );
+);

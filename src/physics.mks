@@ -1,3 +1,27 @@
+const Car_apply_impulse = (car :: &Car, impulse :: Vector2, do_sound :: Bool) => (
+    let state = &(@current State);
+    car^.vel = Vector2_add(car^.vel, impulse);
+    let intensity = mul[Float](Vector2_length(impulse), 0.5);
+    if car^.is_player then (
+        state^.screen_shake = max[Float](
+            state^.screen_shake,
+            intensity,
+        );
+    );
+    if do_sound then (
+        let distance = abs[Float](
+            sub[Float](car^.pos.y, state^.camera.target.y)
+        );
+        let distance_multiplier = sub[Float](1, sqr[Float](div[Float](distance, 5)));
+        let volume = clamp[Float](
+            mul[Float](intensity, distance_multiplier),
+            0,
+            1,
+        );
+        play_sound((@current Assets).sfx.bonk, 0.5, volume);
+    );
+);
+
 const check_Car_Car_collision = (a :: &Car, b :: &Car) => unwindable fn (
     let delta_pos_ab = Vector2_sub(b^.pos, a^.pos);
     let dist = Vector2_length(delta_pos_ab);
@@ -15,8 +39,8 @@ const check_Car_Car_collision = (a :: &Car, b :: &Car) => unwindable fn (
         unwind fn with ();
     );
     let impulse = Vector2_mul(normal_ab, delta_vel_ab);
-    a^.vel = Vector2_sub(a^.vel, impulse);
-    b^.vel = Vector2_add(b^.vel, impulse);
+    Car_apply_impulse(a, Vector2_mul(impulse, neg[Float](1)), true);
+    Car_apply_impulse(b, impulse, false);
     let tangent = Vector2_rotate90(normal_ab);
     let tangent_delta_vel = Angle_from_radians(
         sub[Float](
@@ -48,7 +72,7 @@ const check_Car_Road_collision = (car :: &Car) => unwindable fn (
     if less[Float](impulse, 0) then (
         unwind fn with ();
     );
-    car^.vel = Vector2_add(car^.vel, Vector2_mul(normal, impulse));
+    Car_apply_impulse(car, Vector2_mul(normal, impulse), true);
     let tangent_vel = Angle_from_radians(div[Float](Vector2_skew(car^.vel, normal), CAR_RADIUS));
     tangent_vel = Angle_add(tangent_vel, car^.angular_velocity);
     let angular_impulse = Angle_mul(tangent_vel, neg[Float](1));
@@ -104,6 +128,8 @@ const check_traffic_traffic_collisions = () => (
 );
 
 const update_physics = (delta_time :: Float) => (
+    let state = &(@current State);
+    let old_player_vel = state^.player.vel;
     check_car_road_collisions();
     check_traffic_player_collisions();
     check_traffic_traffic_collisions();

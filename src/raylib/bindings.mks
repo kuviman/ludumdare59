@@ -91,6 +91,8 @@ const KEY_DOWN :: Int;
 const BLACK :: Color;
 @native
 const WHITE :: Color;
+@native
+const RED :: Color;
 
 @native
 const Camera2D = struct {
@@ -137,4 +139,39 @@ const raylib_GetScreenToWorld2D = (pos :: Vector2, camera :: Camera2D) -> Vector
 
 const raylib_ColorFromHSV = (hue :: Float, saturation :: Float, value :: Float) -> Color => (
     @native "ColorFromHSV(\(hue), \(saturation), \(value))"
+);
+
+@native
+const Sound = @opaque_type;
+
+const raylib_LoadSound = (path :: String) -> Sound => (
+    @native "LoadSound(\(String_to_C_String(path)))"
+);
+
+const raylib_LoadSoundAlias = (source :: Sound) -> Sound => (
+    @native "LoadSoundAlias(\(source))"
+);
+
+const raylib_UnloadSoundAlias = (alias :: Sound) => (
+    @native "UnloadSoundAlias(\(alias))"
+);
+
+const raylib_PlaySound = (sound :: Sound) => (
+    @native "PlaySound(\(sound))"
+);
+
+const raylib_InitAudioDevice = () => (
+    @native "InitAudioDevice()"
+);
+
+const raylib_SetSoundVolume = (sound :: Sound, volume :: Float) => (
+    @native "SetSoundVolume(\(sound), \(volume))"
+);
+
+const raylib_SetSoundPitch = (sound :: Sound, pitch :: Float) => (
+    @native "SetSoundPitch(\(sound), \(pitch))"
+);
+
+const raylib_IsSoundPlaying = (sound :: Sound) -> Bool => (
+    @native "IsSoundPlaying(\(sound))"
 );

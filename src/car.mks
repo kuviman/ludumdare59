@@ -5,6 +5,7 @@ const Car = struct {
     .rotation :: Angle,
     .steer :: Float,
     .angular_velocity :: Angle,
+    .is_player :: Bool,
 };
 
 const Car_new = (pos :: Vector2) -> Car => {
@@ -17,6 +18,7 @@ const Car_new = (pos :: Vector2) -> Car => {
     .vel = { .x = 0, .y = 0 },
     .rotation = Angle_from_degrees(neg[Float](90)),
     .angular_velocity = Angle_from_degrees(0),
+    .is_player = false,
 };
 
 const CAR_STEER_SPEED :: Float = 2;
@@ -140,6 +142,15 @@ const Car_draw = (car :: &Car) => (
         car^.rotation,
         { .x = 0.5, .y = 0.5 },
         WHITE,
+    );
+    if car^.is_player then (
+        Texture_draw(
+            (@current Assets).textures.player_icon,
+            car^.pos,
+            car^.rotation,
+            { .x = 0.5, .y = 0.5 },
+            car^.tint,
+        );
     );
 );
 

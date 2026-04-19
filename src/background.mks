@@ -37,6 +37,9 @@ const draw_background = () => (
         },
         camera,
     );
+    let extra_space :: Vector2 = { .x = 10, .y = 10 };
+    top_left = Vector2_sub(top_left, extra_space);
+    bottom_right = Vector2_add(bottom_right, extra_space);
     draw_background_texture(
         assets^.textures.road,
         {

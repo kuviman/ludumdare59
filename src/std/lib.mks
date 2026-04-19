@@ -71,3 +71,7 @@ const @"and" = (a :: Bool, b :: Bool) -> Bool => (
 const @"or" = (a :: Bool, b :: Bool) -> Bool => (
     @native "\(a) || \(b)"
 );
+
+const sqr = [T] (x :: T) -> T => (
+    mul[T](x, x)
+);

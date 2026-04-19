@@ -1,6 +1,7 @@
 const PIXELS_PER_UNIT :: Float = 32;
 
 const TextureAssets = struct {
+    .player_icon :: Texture,
     .car_tinted :: Texture,
     .car_untinted :: Texture,
     .car_wheel :: Texture,
@@ -9,8 +10,13 @@ const TextureAssets = struct {
     .grass :: Texture,
 };
 
+const SoundAssets = struct {
+    .bonk :: Sound,
+};
+
 const AssetsT = struct {
     .textures :: TextureAssets,
+    .sfx :: SoundAssets,
 };
 
 const Assets = @context AssetsT;
@@ -28,6 +34,10 @@ const load_assets = () -> AssetsT => (
             .road = load_texture("assets/textures/road.png"),
             .road_border = load_texture("assets/textures/road_border.png"),
             .grass = load_texture("assets/textures/grass.png"),
+            .player_icon = load_texture("assets/textures/player_icon.png"),
+        },
+        .sfx = {
+            .bonk = raylib_LoadSound("assets/sfx/bonk.wav"),
         },
     }
 );

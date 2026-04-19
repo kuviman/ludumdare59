@@ -1,0 +1,39 @@
+const AudioContextT = struct {
+    .sound_effects :: ArrayList[Sound],
+};
+
+const init_audio = () -> AudioContextT => (
+    raylib_InitAudioDevice();
+    { .sound_effects = ArrayList_new[Sound]() }
+);
+
+const AudioContext = @context AudioContextT;
+
+const play_sound = (
+    sound :: Sound,
+    pitch_range :: Float,
+    volume :: Float,
+) => unwindable fn (
+    if less[Float](volume, 0.1) then (
+        unwind fn with ();
+    );
+    let ctx = &(@current AudioContext);
+    sound = raylib_LoadSoundAlias(sound);
+    raylib_SetSoundPitch(
+        sound,
+        add[Float](
+            1,
+            random_Float_range(
+                neg[Float](pitch_range),
+                pitch_range,
+            ),
+        ),
+    );
+    raylib_SetSoundVolume(sound, volume);
+    raylib_PlaySound(sound);
+    ArrayList_push[Sound](&ctx^.sound_effects, sound);
+    ArrayList_retain[Sound](
+        &ctx^.sound_effects,
+        (sfx :: Sound) -> Bool => raylib_IsSoundPlaying(sfx),
+    );
+);

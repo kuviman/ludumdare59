@@ -1,5 +1,8 @@
 const StateT = struct {
     .camera :: Camera2D,
+    .camera_target :: Vector2,
+    .t :: Float,
+    .screen_shake :: Float,
     .fov :: Float,
     .player :: Car,
     .traffic :: Traffic,
@@ -14,35 +17,22 @@ const init_state = () -> StateT => {
         .rotation = 0,
         .zoom = 1,
     },
+    .t = 0,
+    .camera_target = { .x = 0, .y = 0 },
+    .screen_shake = 0,
     .fov = 10,
     .traffic = Traffic_new(),
-    .player = Car_new({ .x = 0, .y = 0 }),
+    .player = (
+        let car = Car_new({ .x = 0, .y = 0 });
+        car.tint = RED;
+        car.is_player = true;
+        car
+    ),
 };
-
-const LOOKAHEAD :: Float = 0.8;
-const CAMERA_SPEED :: Float = 5;
-
-const update_camera = (delta_time :: Float) => (
-    let state = &(@current State);
-    let camera_target_pos :: Vector2 = {
-        .x = 0,
-        .y = add[Float](
-            state^.player.pos.y,
-            mul[Float](state^.player.vel.y, LOOKAHEAD),
-        ),
-    };
-    let delta_pos = Vector2_sub(camera_target_pos, state^.camera.target);
-    state^.camera.target = Vector2_add(
-        state^.camera.target,
-        Vector2_clamp_max_length(
-            Vector2_mul(delta_pos, mul[Float](CAMERA_SPEED, delta_time)),
-            Vector2_length(delta_pos),
-        ),
-    );
-);
 
 const update = (delta_time :: Float) => (
     let state = &(@current State);
+    state^.t = add[Float](state^.t, delta_time);
     update_camera(delta_time);
     Traffic_update(&state^.traffic, delta_time);
     Car_update(&state^.player, get_player_input(), delta_time);
@@ -75,6 +65,7 @@ const main = () => (
     # raylib_SetTargetFPS(30);
     @native "SetWindowState(FLAG_WINDOW_RESIZABLE)";
     # @native "SetWindowState(FLAG_WINDOW_RESIZABLE | FLAG_BORDERLESS_WINDOWED_MODE)";
+    with AudioContext = init_audio();
     with Assets = load_assets();
     with State = init_state();
     main_loop(frame);
