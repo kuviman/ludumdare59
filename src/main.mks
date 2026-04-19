@@ -14,36 +14,43 @@ const StateT = struct {
 
 const ROAD_RADIUS :: Float = 6;
 
-const init_state = (settings :: Settings) -> StateT => {
-    .camera = {
-        .offset = { .x = 0, .y = 0 },
-        .target = { .x = 0, .y = 0 },
-        .rotation = 0,
-        .zoom = 1,
-    },
-    .t = 0,
-    .mega_honking = 0,
-    .camera_target = { .x = 0, .y = 0 },
-    .screen_shake = 0,
-    .fov = 10,
-    .traffic = Traffic_new(),
-    .player = (
-        let car = Car_new({ .x = 0, .y = 0 });
-        car.tint = RED;
-        car.is_player = true;
-        {
-            .car = car,
-            .fuel = settings.fuel_capacity,
-            .anger = 0,
-        }
-    ),
-    .texticles = Texticles_new(),
-    .settings = settings,
-    .stats = Stats_new(),
-};
+const init_state = (settings :: Settings) -> StateT => (
+    play_sound((@current Assets).sfx.start, 0, 1);
+    {
+        .camera = {
+            .offset = { .x = 0, .y = 0 },
+            .target = { .x = 0, .y = 0 },
+            .rotation = 0,
+            .zoom = 1,
+        },
+        .t = 0,
+        .mega_honking = 0,
+        .camera_target = { .x = 0, .y = 0 },
+        .screen_shake = 0,
+        .fov = 10,
+        .traffic = Traffic_new(),
+        .player = (
+            let car = Car_new({ .x = 0, .y = 0 });
+            car.tint = RED;
+            car.is_player = true;
+            {
+                .car = car,
+                .fuel = settings.fuel_capacity,
+                .anger = 0,
+                .lost = false,
+            }
+        ),
+        .texticles = Texticles_new(),
+        .settings = settings,
+        .stats = Stats_new(),
+    }
+);
 
 const update = (delta_time :: Float) => (
     let state = &(@current State);
+    if raylib_IsKeyPressed(KEY_R) then (
+        state^ = init_state(state^.settings);
+    );
     state^.t = add[Float](state^.t, delta_time);
     update_camera(delta_time);
     Traffic_update(&state^.traffic, delta_time);

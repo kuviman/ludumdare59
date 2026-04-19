@@ -9,7 +9,7 @@ const do_honk = (car :: &Car) => (
         ) else (
             (@current Assets).sfx.mid_honk
         );
-        play_sound_at(sfx, car^.pos, 0.2, 1);
+        play_sound_at(sfx, car^.pos, 0.1, 0.7);
         car^.honk_cooldown = if car^.is_player then (
             1
         ) else (
@@ -30,7 +30,7 @@ const player_honk = () => unwindable fn (
         unwind fn with ();
     );
     if greater_or_equal[Float](state^.player.anger, 1) then (
-        play_sound((@current Assets).sfx.mega_honk, 0.1, 1);
+        play_sound((@current Assets).sfx.mega_honk, 0, 1);
         state^.screen_shake = 1;
         state^.mega_honking = 1;
         apply_mega_honk_impulse(MEGA_HONK_IMPULSE);

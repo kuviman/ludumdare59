@@ -97,6 +97,21 @@ const KEY_UP :: Key;
 const KEY_DOWN :: Key;
 
 @native
+const KEY_W :: Key;
+
+@native
+const KEY_A :: Key;
+
+@native
+const KEY_S :: Key;
+
+@native
+const KEY_D :: Key;
+
+@native
+const KEY_R :: Key;
+
+@native
 const KEY_SPACE :: Key;
 
 @native
