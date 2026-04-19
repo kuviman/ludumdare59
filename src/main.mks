@@ -3,6 +3,7 @@ const StateT = struct {
     .camera_target :: Vector2,
     .t :: Float,
     .screen_shake :: Float,
+    .mega_honking :: Float,
     .fov :: Float,
     .player :: Car,
     .traffic :: Traffic,
@@ -18,6 +19,7 @@ const init_state = () -> StateT => {
         .zoom = 1,
     },
     .t = 0,
+    .mega_honking = 0,
     .camera_target = { .x = 0, .y = 0 },
     .screen_shake = 0,
     .fov = 10,
@@ -40,6 +42,7 @@ const update = (delta_time :: Float) => (
     if raylib_IsKeyPressed(KEY_SPACE) then (
         player_honk();
     );
+    update_honk(delta_time);
 );
 
 const draw = () => (

@@ -1,3 +1,4 @@
+const MEGA_HONK_IMPULSE :: Float = 30;
 const MEGA_HONK_FORCE :: Float = 30;
 const MEGA_HONK_DISTANCE :: Float = 4;
 
@@ -5,6 +6,20 @@ const player_honk = () => (
     let state = &(@current State);
     play_sound((@current Assets).sfx.mega_honk, 0.1, 1);
     state^.screen_shake = 1;
+    state^.mega_honking = 2;
+    apply_mega_honk_impulse(MEGA_HONK_IMPULSE);
+);
+
+const update_honk = (delta_time :: Float) => (
+    let state = &(@current State);
+    state^.mega_honking = sub[Float](state^.mega_honking, delta_time);
+    if greater[Float](state^.mega_honking, 0) then (
+        apply_mega_honk_impulse(mul[Float](MEGA_HONK_FORCE, delta_time));
+    );
+);
+
+const apply_mega_honk_impulse = (impulse :: Float) => (
+    let state = &(@current State);
     let i :: UInt = 0;
     unwindable loop @loop (
         if greater_or_equal[UInt](i, state^.traffic.cars.length) then (
@@ -14,11 +29,11 @@ const player_honk = () => (
         let delta_pos = Vector2_sub(car^.pos, state^.player.pos);
         let normal = Vector2_normalize(delta_pos);
         let distance = Vector2_length(delta_pos);
-        let impulse = mul[Float](
+        let car_impulse = mul[Float](
             clamp[Float](sub[Float](1, div[Float](distance, MEGA_HONK_DISTANCE)), 0, 1),
-            MEGA_HONK_FORCE,
+            impulse,
         );
-        car^.vel = Vector2_add(car^.vel, Vector2_mul(normal, impulse));
+        car^.vel = Vector2_add(car^.vel, Vector2_mul(normal, car_impulse));
         i = add[UInt](i, 1);
     );
 );
