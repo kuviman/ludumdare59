@@ -18,7 +18,22 @@ const Traffic_new = () -> Traffic => (
     { .cars = cars, .spawn_pos = 0 }
 );
 
+const Car_is_in_front = (car :: &TrafficCar, other :: &Car) -> Bool => (
+    let R :: Float = 1;
+    let dir = Vector2_from_angle(car^.car.rotation);
+    less[Float](
+        Vector2_length(
+            Vector2_sub(
+                other^.pos,
+                Vector2_add(car^.car.pos, Vector2_mul(dir, R))
+            )
+        ),
+        sub[Float](R, 0.1),
+    )
+);
+
 const TrafficCar_update = (car :: &TrafficCar, delta_time :: Float) => (
+    let state = &(@current State);
     let until_target = sub[Float](car^.car.pos.y, car^.target.y);
     if less[Float](until_target, 1) then (
         let DX :: Float = sub[Float](ROAD_RADIUS, CAR_RADIUS);
@@ -29,8 +44,31 @@ const TrafficCar_update = (car :: &TrafficCar, delta_time :: Float) => (
     let delta_pos = Vector2_sub(car^.target, car^.car.pos);
     let dir_to_target = Vector2_normalize(delta_pos);
     let dir = Vector2_from_angle(car^.car.rotation);
+    let stop :: Bool = unwindable stop_label (
+        let i :: UInt = 0;
+        unwindable loop @loop (
+            if greater_or_equal[UInt](i, state^.traffic.cars.length) then (
+                unwind loop with ();
+            );
+            let other = ArrayList_index[TrafficCar](&state^.traffic.cars, i);
+            if Car_is_in_front(car, &other^.car) then (
+                unwind stop_label with true;
+            );
+            i = add[UInt](i, 1);
+        );
+        Car_is_in_front(car, &state^.player)
+    );
     let car_input :: CarInput = {
-        .accelerate = (
+        .accelerate = if stop then (
+            clamp[Float](
+                mul[Float](
+                    neg[Float](Vector2_dot(car^.car.vel, dir)),
+                    10,
+                ),
+                neg[Float](1),
+                1,
+            )
+        ) else (
             let target_speed = clamp_min[Float](
                 div[Float](Vector2_dot(dir, dir_to_target), 2),
                 0.25,
@@ -43,7 +81,14 @@ const TrafficCar_update = (car :: &TrafficCar, delta_time :: Float) => (
     Car_update(&car^.car, car_input, delta_time);
 );
 
-const TRAFFIC_SPAWN_DISTANCE :: Float = 20;
+const traffic_spawn_interval = () -> Float => (
+    let t = (@current State).player.pos.y;
+    let avg :: Float = 1.5;
+    let amp :: Float = 1;
+    add[Float](avg, mul[Float](amp, Math_sin(div[Float](t, 30))))
+);
+
+const TRAFFIC_SPAWN_DISTANCE :: Float = 10;
 
 const TrafficCar_should_retain = (car :: TrafficCar) -> Bool => (
     less[Float](
@@ -53,7 +98,7 @@ const TrafficCar_should_retain = (car :: TrafficCar) -> Bool => (
                 (@current State).traffic.spawn_pos,
             )
         ),
-        add[Float](TRAFFIC_SPAWN_DISTANCE, 2),
+        add[Float](TRAFFIC_SPAWN_DISTANCE, 5),
     )
 );
 
@@ -67,9 +112,17 @@ const Traffic_update = (traffic :: &Traffic, delta_time :: Float) => (
         };
         let car = TrafficCar_new(pos);
         ArrayList_push[TrafficCar](&traffic^.cars, car);
-        traffic^.spawn_pos = sub[Float](traffic^.spawn_pos, 1);
+        traffic^.spawn_pos = sub[Float](traffic^.spawn_pos, traffic_spawn_interval());
     );
-    if greater[Float](player.pos.y, add[Float](traffic^.spawn_pos, 2)) then (
+    if (
+        greater[Float](
+            player.pos.y,
+            add[Float](
+                traffic^.spawn_pos,
+                add[Float](traffic_spawn_interval(), 0.1),
+            ),
+        )
+    ) then (
         let DX :: Float = sub[Float](ROAD_RADIUS, CAR_RADIUS);
         let pos :: Vector2 = {
             .x = random_Float_range(neg[Float](DX), DX),
@@ -77,7 +130,7 @@ const Traffic_update = (traffic :: &Traffic, delta_time :: Float) => (
         };
         let car = TrafficCar_new(pos);
         ArrayList_push[TrafficCar](&traffic^.cars, car);
-        traffic^.spawn_pos = add[Float](traffic^.spawn_pos, 1);
+        traffic^.spawn_pos = add[Float](traffic^.spawn_pos, traffic_spawn_interval());
     );
     ArrayList_retain[TrafficCar](&traffic^.cars, TrafficCar_should_retain);
     let i :: UInt = 0;

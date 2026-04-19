@@ -33,11 +33,11 @@ const update_camera = (delta_time :: Float) => (
                 .x = Math_sin(add[Float](mul[Float](state^.t, 30), 123)),
                 .y = Math_sin(mul[Float](state^.t, 40)),
             },
-            mul[Float](state^.screen_shake, 0.1),
+            mul[Float](state^.screen_shake, 0.05),
         ),
     );
     state^.camera.rotation = mul[Float](
         Math_sin(add[Float](mul[Float](state^.t, 35), 7)),
-        mul[Float](state^.screen_shake, 2),
+        mul[Float](state^.screen_shake, 1),
     );
 );
