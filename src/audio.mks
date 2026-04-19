@@ -1,5 +1,6 @@
 const AudioContextT = struct {
     .sound_effects :: ArrayList[Sound],
+    .musics :: ArrayList[Music],
 };
 
 const init_audio = () -> AudioContextT => (
@@ -35,5 +36,25 @@ const play_sound = (
     ArrayList_retain[Sound](
         &ctx^.sound_effects,
         (sfx :: Sound) -> Bool => raylib_IsSoundPlaying(sfx),
+    );
+);
+
+const play_music = (music :: Music, volume :: Float) => (
+    let ctx = &(@current AudioContext);
+    raylib_SetMusicVolume(music, volume);
+    raylib_PlayMusicStream(music);
+    ArrayList_push[Music](&ctx^.musics, music);
+);
+
+const update_audio = () => (
+    let ctx = &(@current AudioContext);
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if greater_or_equal[UInt](i, ctx^.musics.length) then (
+            unwind loop with ();
+        );
+        let music = ArrayList_index[Music](&ctx^.musics, i)^;
+        raylib_UpdateMusicStream(music);
+        i = add[UInt](i, 1);
     );
 );

@@ -14,9 +14,15 @@ const SoundAssets = struct {
     .bonk :: Sound,
 };
 
+const MusicAssets = struct {
+    .traffic :: Music,
+    .radio :: Music,
+};
+
 const AssetsT = struct {
     .textures :: TextureAssets,
     .sfx :: SoundAssets,
+    .music :: MusicAssets,
 };
 
 const Assets = @context AssetsT;
@@ -38,6 +44,10 @@ const load_assets = () -> AssetsT => (
         },
         .sfx = {
             .bonk = raylib_LoadSound("assets/sfx/bonk.wav"),
+        },
+        .music = {
+            .traffic = raylib_LoadMusicStream("assets/music/traffic_loop.wav"),
+            .radio = raylib_LoadMusicStream("assets/music/radio.wav"),
         },
     }
 );

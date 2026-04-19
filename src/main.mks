@@ -52,6 +52,7 @@ const draw = () => (
 );
 
 const frame = () => (
+    update_audio();
     update(raylib_GetFrameTime());
     raylib_BeginDrawing();
     raylib_ClearBackground(BLACK);
@@ -68,5 +69,7 @@ const main = () => (
     with AudioContext = init_audio();
     with Assets = load_assets();
     with State = init_state();
+    play_music((@current Assets).music.traffic, 0.5);
+    play_music((@current Assets).music.radio, 0.5);
     main_loop(frame);
 );

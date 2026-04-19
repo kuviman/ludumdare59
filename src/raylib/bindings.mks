@@ -175,3 +175,22 @@ const raylib_SetSoundPitch = (sound :: Sound, pitch :: Float) => (
 const raylib_IsSoundPlaying = (sound :: Sound) -> Bool => (
     @native "IsSoundPlaying(\(sound))"
 );
+
+@native
+const Music = @opaque_type;
+
+const raylib_LoadMusicStream = (path :: String) -> Music => (
+    @native "LoadMusicStream(\(String_to_C_String(path)))"
+);
+
+const raylib_PlayMusicStream = (music :: Music) => (
+    @native "PlayMusicStream(\(music))"
+);
+
+const raylib_UpdateMusicStream = (music :: Music) => (
+    @native "UpdateMusicStream(\(music))"
+);
+
+const raylib_SetMusicVolume = (music :: Music, volume :: Float) => (
+    @native "SetMusicVolume(\(music), \(volume))"
+);
