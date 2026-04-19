@@ -11,11 +11,13 @@ const Stats_new = () -> Stats => {
 };
 
 const Settings = struct {
+    .fuel_can_fuel :: Float,
     .fuel_usage_speed :: Float,
     .fuel_capacity :: Float,
 };
 
 const Settings_default = () -> Settings => {
+    .fuel_can_fuel = 5,
     .fuel_usage_speed = 1,
     .fuel_capacity = 30,
 };

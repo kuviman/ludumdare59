@@ -1,0 +1,84 @@
+const FuelCan = struct {
+    .pos :: Vector2,
+};
+
+const FuelState = struct {
+    .cans :: ArrayList[FuelCan],
+    .next_spawn :: Float,
+    .spawn_interval :: Float,
+};
+
+const FuelState_new = () -> FuelState => {
+    .cans = ArrayList_new[FuelCan](),
+    .next_spawn = 0,
+    .spawn_interval = 10,
+};
+
+const FuelCan_retain = (can :: FuelCan) -> Bool => unwindable fn (
+    let state = &(@current State);
+    if less[Float](Vector2_length(Vector2_sub(can.pos, state^.player.car.pos)), CAR_RADIUS) then (
+        state^.player.fuel = min[Float](
+            add[Float](state^.player.fuel, state^.settings.fuel_can_fuel),
+            state^.settings.fuel_capacity,
+        );
+        play_sound((@current Assets).sfx.fuel_pickup, 0.1, 1);
+        unwind fn with false;
+    );
+    less[Float](abs[Float](sub[Float](state^.player.car.pos.y, can.pos.y)), add[Float](TRAFFIC_SPAWN_DISTANCE, 3))
+);
+
+const Fuel_spawn = (dir :: Float) => (
+    let state = &(@current State);
+    state^.fuel.spawn_interval = add[Float](
+        state^.fuel.spawn_interval,
+        5,
+    );
+    let R :: Float = sub[Float](ROAD_RADIUS, CAR_RADIUS);
+    let can :: FuelCan = {
+        .pos = {
+            .x = random_Float_range(neg[Float](R), R),
+            .y = sub[Float](state^.player.car.pos.y, mul[Float](dir, TRAFFIC_SPAWN_DISTANCE)),
+        },
+    };
+    ArrayList_push[FuelCan](&state^.fuel.cans, can);
+);
+
+const FuelState_update = (delta_time :: Float) => (
+    let state = &(@current State);
+    ArrayList_retain[FuelCan](&state^.fuel.cans, FuelCan_retain);
+    if less[Float](state^.player.car.pos.y, state^.fuel.next_spawn) then (
+        Fuel_spawn(1);
+        state^.fuel.next_spawn = sub[Float](state^.fuel.next_spawn, state^.fuel.spawn_interval);
+    );
+    if (
+        greater[Float](
+            state^.player.car.pos.y,
+            add[Float](
+                state^.fuel.next_spawn,
+                add[Float](state^.fuel.spawn_interval, 0.1),
+            ),
+        )
+    ) then (
+        Fuel_spawn(neg[Float](1));
+        state^.fuel.next_spawn = add[Float](state^.fuel.next_spawn, state^.fuel.spawn_interval);
+    );
+);
+
+const FuelState_draw = () => (
+    let state = &(@current State);
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if greater_or_equal[UInt](i, state^.fuel.cans.length) then (
+            unwind loop with ();
+        );
+        let can = ArrayList_index[FuelCan](&state^.fuel.cans, i);
+        Texture_draw(
+            (@current Assets).textures.fuel,
+            can^.pos,
+            Angle_from_degrees(mul[Float](state^.t, 120)),
+            { .x = 0.5, .y = 0.5 },
+            WHITE,
+        );
+        i = add[UInt](i, 1);
+    );
+);

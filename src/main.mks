@@ -10,6 +10,7 @@ const StateT = struct {
     .texticles :: Texticles,
     .settings :: Settings,
     .stats :: Stats,
+    .fuel :: FuelState,
 };
 
 const ROAD_RADIUS :: Float = 6;
@@ -44,6 +45,7 @@ const init_state = (settings :: Settings) -> StateT => (
         .texticles = Texticles_new(),
         .settings = settings,
         .stats = Stats_new(),
+        .fuel = FuelState_new(),
     }
 );
 
@@ -65,6 +67,7 @@ const update = (delta_time :: Float) => (
     if state^.player.moved then (
         state^.stats.time = add[Float](state^.stats.time, delta_time);
     );
+    FuelState_update(delta_time);
     state^.stats.distance = neg[Float](state^.player.car.pos.y);
 );
 
@@ -76,6 +79,7 @@ const draw = () => (
     raylib_BeginMode2D(state^.camera);
     draw_background();
     Traffic_draw(&state^.traffic);
+    FuelState_draw();
     Car_draw(&state^.player.car);
     Texticles_draw(&state^.texticles);
     raylib_EndMode2D();
