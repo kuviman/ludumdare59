@@ -127,7 +127,7 @@ const Car_update = (car :: &Car, input :: CarInput, delta_time :: Float) => (
     );
 );
 
-const Car_draw = (car :: &Car) => (
+const Car_draw = (car :: &Car, angry :: Bool) => (
     let tinted_texture = (@current Assets).textures.car_tinted;
     let untinted_texture = (@current Assets).textures.car_untinted;
     let wheel_texture = (@current Assets).textures.car_wheel;
@@ -179,6 +179,43 @@ const Car_draw = (car :: &Car) => (
         car^.rotation,
         { .x = 0.5, .y = 0.5 },
         WHITE,
+    );
+    let headligh_color_on :: Color = if angry then (
+        { .r = 255, .g = 100, .b = 0, .a = 255 }
+    ) else (
+        { .r = 255, .g = 255, .b = 0, .a = 255 }
+    );
+    let headligh_color_off :: Color = if angry then (
+        { .r = 255, .g = 0, .b = 0, .a = 255 }
+    ) else (
+        { .r = 200, .g = 200, .b = 200, .a = 255 }
+    );
+    let blink = less[Float](Math_fract(mul[Float]((@current State).t, 2)), 0.5);
+    let turning_left = less[Float](car^.steer, neg[Float](0.1));
+    let turning_right = greater[Float](car^.steer, 0.1);
+    let left_headlight_color = if @"and"(turning_left, blink) then (
+        headligh_color_on
+    ) else (
+        headligh_color_off
+    );
+    let right_headlight_color = if @"and"(turning_right, blink) then (
+        headligh_color_on
+    ) else (
+        headligh_color_off
+    );
+    Texture_draw(
+        (@current Assets).textures.left_headlight,
+        car^.pos,
+        car^.rotation,
+        { .x = 0.5, .y = 0.5 },
+        left_headlight_color,
+    );
+    Texture_draw(
+        (@current Assets).textures.right_headlight,
+        car^.pos,
+        car^.rotation,
+        { .x = 0.5, .y = 0.5 },
+        right_headlight_color,
     );
     if car^.is_player then (
         Texture_draw(

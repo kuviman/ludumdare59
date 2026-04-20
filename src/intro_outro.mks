@@ -17,6 +17,7 @@ const update_intro_outro = (delta_time :: Float) => (
             0,
             1,
         );
+        k = mul[Float](k, 0.2);
         state^.outro = min[Float](
             add[Float](
                 state^.outro,

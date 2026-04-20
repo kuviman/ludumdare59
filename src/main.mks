@@ -85,7 +85,7 @@ const draw = () => (
     draw_background();
     Traffic_draw(&state^.traffic);
     FuelState_draw();
-    Car_draw(&state^.player.car);
+    Car_draw(&state^.player.car, greater_or_equal[Float](state^.player.anger, 1));
     Texticles_draw(&state^.texticles);
     draw_intro_outro();
     raylib_EndMode2D();

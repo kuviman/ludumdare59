@@ -60,6 +60,10 @@ const Math_sqrt = (x :: Float) -> Float => (
     @native "sqrt(\(x))"
 );
 
+const Math_fract = (x :: Float) -> Float => (
+    @native "\(x) - (int)\(x)"
+);
+
 const Int_to_Float = (x :: Int) -> Float => (
     @native "(float) \(x)"
 );

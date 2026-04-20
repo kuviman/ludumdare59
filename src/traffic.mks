@@ -177,7 +177,7 @@ const Traffic_draw = (traffic :: &Traffic) => (
             unwind loop with ();
         );
         let car = ArrayList_index[TrafficCar](&traffic^.cars, i);
-        Car_draw(&car^.car);
+        Car_draw(&car^.car, car^.going_towards_player);
         i = add[UInt](i, 1);
     );
 );
