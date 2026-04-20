@@ -1,3 +1,5 @@
+const init_backend = () => ();
+
 const main_loop = (frame :: () -> ()) => (
     unwindable loop @loop (
         if raylib_WindowShouldClose() then (

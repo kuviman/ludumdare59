@@ -4,17 +4,23 @@ const Trails = struct {
     .prev_cam_pos :: Vector2,
 };
 
+const TRAIL_TEXTURE_SIZE :: Int = 1024;
+
 const Trails_new = () -> Trails => (
-    let SIZE :: Int = 1024;
     {
         .current = (
-            let target = raylib_LoadRenderTexture(SIZE, SIZE);
+            let target = raylib_LoadRenderTexture(TRAIL_TEXTURE_SIZE, TRAIL_TEXTURE_SIZE);
+            raylib_SetTextureWrap(target.texture, TEXTURE_WRAP_REPEAT);
             raylib_BeginTextureMode(target);
             raylib_ClearBackground({ .r = 0, .g = 0, .b = 0, .a = 0 });
             raylib_EndTextureMode();
             target
         ),
-        .old = raylib_LoadRenderTexture(SIZE, SIZE),
+        .old = (
+            let old_target = raylib_LoadRenderTexture(TRAIL_TEXTURE_SIZE, TRAIL_TEXTURE_SIZE);
+            raylib_SetTextureWrap(old_target.texture, TEXTURE_WRAP_REPEAT);
+            old_target
+        ),
         .prev_cam_pos = { .x = 0, .y = 0 },
     }
 );
@@ -95,8 +101,8 @@ const Trails_prepare = () => (
     raylib_BeginMode2D(camera);
     with DrawTexturesFlippedBecauseRaylibIsFlippingTextures = true;
     @native "#include <rlgl.h>";
-    @native "BeginBlendMode(BLEND_CUSTOM)";
     @native "rlSetBlendFactors(RL_ONE, RL_ONE, RL_MAX)";
+    @native "BeginBlendMode(BLEND_CUSTOM)";
     Texture_draw(
         trails^.old.texture,
         trails^.prev_cam_pos,
