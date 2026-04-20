@@ -1,11 +1,16 @@
 const TrafficCar = struct {
     .car :: Car,
     .target :: Vector2,
+    .going_towards_player :: Bool,
 };
 
 const TrafficCar_new = (pos :: Vector2) -> TrafficCar => (
     let car = Car_new(pos);
-    { .car = car, .target = pos }
+    {
+        .car = car,
+        .target = pos,
+        .going_towards_player = less[Float](random_Float_range(0, 100), 1),
+    }
 );
 
 const Traffic = struct {
@@ -41,6 +46,9 @@ const TrafficCar_update = (car :: &TrafficCar, delta_time :: Float) => (
         car^.target.x = random_Float_range(neg[Float](DX), DX);
         car^.target.y = sub[Float](car^.car.pos.y, DY);
     );
+    if car^.going_towards_player then (
+        car^.target = state^.player.car.pos;
+    );
     let delta_pos = Vector2_sub(car^.target, car^.car.pos);
     let dir_to_target = Vector2_normalize(delta_pos);
     let dir = Vector2_from_angle(car^.car.rotation);
@@ -58,6 +66,9 @@ const TrafficCar_update = (car :: &TrafficCar, delta_time :: Float) => (
         );
         Car_is_in_front(car, &state^.player.car)
     );
+    if car^.going_towards_player then (
+        stop = false;
+    );
     if stop then (
         do_honk(&car^.car);
     );
@@ -72,8 +83,9 @@ const TrafficCar_update = (car :: &TrafficCar, delta_time :: Float) => (
                 1,
             )
         ) else (
+            let slower_than_player :: Float = if car^.going_towards_player then 1 else 2;
             let target_speed = clamp_min[Float](
-                div[Float](Vector2_dot(dir, dir_to_target), 2),
+                div[Float](Vector2_dot(dir, dir_to_target), slower_than_player),
                 0.25,
             );
             let current_speed = div[Float](Vector2_length(car^.car.vel), CAR_MAX_SPEED);

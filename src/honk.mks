@@ -67,13 +67,17 @@ const apply_mega_honk_impulse = (impulse :: Float) => (
         if greater_or_equal[UInt](i, state^.traffic.cars.length) then (
             unwind loop with ();
         );
-        let car = &ArrayList_index[TrafficCar](&state^.traffic.cars, i)^.car;
+        let traffic_car = ArrayList_index[TrafficCar](&state^.traffic.cars, i);
+        let car = &traffic_car^.car;
         let delta_pos = Vector2_sub(car^.pos, state^.player.car.pos);
         let normal = Vector2_normalize(delta_pos);
         let distance = Vector2_length(delta_pos);
         let car_impulse = mul[Float](
             clamp[Float](sub[Float](1, div[Float](distance, MEGA_HONK_DISTANCE)), 0, 1),
             impulse,
+        );
+        if greater[Float](car_impulse, 0) then (
+            traffic_car^.going_towards_player = false;
         );
         car^.vel = Vector2_add(car^.vel, Vector2_mul(normal, car_impulse));
         i = add[UInt](i, 1);

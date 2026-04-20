@@ -68,6 +68,10 @@ const Float_to_Int = (x :: Float) -> Int => (
     @native "(int) \(x)"
 );
 
+const Float_to_UInt8 = (x :: Float) -> UInt8 => (
+    @native "(uint8_t) \(x)"
+);
+
 const not = (b :: Bool) -> Bool => (
     @native "!\(b)"
 );

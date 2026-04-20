@@ -1,0 +1,52 @@
+const update_intro_outro = (delta_time :: Float) => (
+    let state = &(@current State);
+    if state^.player.moved then (
+        state^.intro = min[Float](add[Float](state^.intro, delta_time), 1);
+    );
+    if state^.player.lost then (
+        let k = clamp[Float](
+            sub[Float](
+                1,
+                div[Float](
+                    Vector2_length(
+                        state^.player.car.vel
+                    ),
+                    CAR_MAX_SPEED,
+                ),
+            ),
+            0,
+            1,
+        );
+        state^.outro = min[Float](
+            add[Float](
+                state^.outro,
+                mul[Float](k, delta_time),
+            ),
+            1,
+        );
+    ) else (
+        state^.outro = max[Float](
+            sub[Float](state^.outro, delta_time),
+            0,
+        );
+    );
+);
+
+const draw_intro_outro = () => (
+    let state = &(@current State);
+    if less[Float](state^.intro, 1) then (
+        Texture_draw_pro(
+            (@current Assets).textures.cutout_circle,
+            { .x = 0, .y = 0 },
+            Angle_from_degrees(0),
+            { .x = 0.5, .y = 0.5 },
+            add[Float](1, mul[Float](sqr[Float](state^.intro), 15)),
+            BLACK,
+        );
+    );
+    raylib_DrawRectangleV(
+        Vector2_sub(state^.camera.target, { .x = 100, .y = 100 }),
+        { .x = 200, .y = 200 },
+        { .r = 0, .g = 0, .b = 0, .a = Float_to_UInt8(mul[Float](255, state^.outro)) },
+    );
+);
