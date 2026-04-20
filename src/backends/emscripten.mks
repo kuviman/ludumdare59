@@ -1,12 +1,44 @@
-const init_backend = () => ();
+const init_backend = () => (
+    @native "#include <emscripten.h>";
+    @native "#include <emscripten/html5.h>";
+    @native "EM_ASM({window.updateCanvasSize()})";
+    @native ''
+        {
+            double width;
+            double height;
+            emscripten_get_element_css_size("#canvas", &width, &height);
+            SetWindowSize((int)width, (int)height); // raylib
+        }'';
+);
+# TODO this is cursed because i need to implement a thing in MiniKast
+const preserve_AudioContext :: AudioContextT = uninitialized;
+const preserve_Assets :: AssetsT = uninitialized;
+const preserve_State :: StateT = uninitialized;
+const preserve_DrawTexturesFlippedBecauseRaylibIsFlippingTextures :: Bool = uninitialized;
+const ImplicitContext = @opaque_type;
+const frame_impl = @call "C" () => (
+    @native "{ Context ctx; frame_impl_impl_fn(&ctx); }"
+);
+const frame_impl_impl = () => (
+    with AudioContext = preserve_AudioContext;
+    with Assets = preserve_Assets;
+    with State = preserve_State;
+    with DrawTexturesFlippedBecauseRaylibIsFlippingTextures = preserve_DrawTexturesFlippedBecauseRaylibIsFlippingTextures;
+    preserve_frame_fn();
+    preserve_AudioContext = @current AudioContext;
+    preserve_Assets = @current Assets;
+    preserve_State = @current State;
+    preserve_DrawTexturesFlippedBecauseRaylibIsFlippingTextures = @current DrawTexturesFlippedBecauseRaylibIsFlippingTextures;
+);
+const preserve_frame_fn :: () -> () = uninitialized;
 
 const main_loop = (frame :: () -> ()) => (
-    unwindable loop @loop (
-        if raylib_WindowShouldClose() then (
-            unwind loop with ();
-        );
-        frame();
-    );
+    preserve_frame_fn = frame;
+    preserve_AudioContext = @current AudioContext;
+    preserve_Assets = @current Assets;
+    preserve_State = @current State;
+    preserve_DrawTexturesFlippedBecauseRaylibIsFlippingTextures = @current DrawTexturesFlippedBecauseRaylibIsFlippingTextures;
+    @native "emscripten_set_main_loop(frame_impl_fn, 0, true)";
 );
 (# TODO
 const frame_impl = @call "C" (ctx :: &Any) => (
@@ -14,7 +46,5 @@ const frame_impl = @call "C" (ctx :: &Any) => (
 );
 
 const main_loop = (_frame :: () -> ()) => (
-    @native "include <emscripten.h>";
-    @native "emscripten_set_main_loop_arg(frame_impl_fn, \(@context), 0, true)";
 );
 #)

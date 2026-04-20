@@ -6,6 +6,7 @@ compile-mks backend:
     kast mini compile \
         --target c \
         --prepend $KAST_PATH/mini/backends/c/runtime.c \
+        --prepend src/backends/{{backend}}.c \
         $KAST_PATH/mini/backends/c/runtime.mks \
         $(fd --extension mks --exclude '**/backends/*') \
         src/backends/{{backend}}.mks \
@@ -25,13 +26,14 @@ compile-emscripten:
         -I. -I $RAYLIB/include \
         -Os \
         -s USE_GLFW=3 \
-        -s ASYNCIFY \
         --preload-file assets \
         -s TOTAL_STACK=64MB \
         -s INITIAL_MEMORY=128MB \
         -s ASSERTIONS \
+        --shell-file shell.html \
         -DPLATFORM_WEB
     # -sMAX_WEBGL_VERSION=2 \
+    # -s ASYNCIFY \
 
 serve-web:
     caddy file-server \
