@@ -1,0 +1,87 @@
+const Particle = struct {
+    .pos :: Vector2,
+    .vel :: Vector2,
+    .lifetime :: Float,
+    .color :: Color,
+    .size :: Float,
+    .rotation :: Angle,
+};
+
+const Particle_update = (particle :: &Particle, delta_time :: Float) => (
+    particle^.pos = Vector2_add(particle^.pos, Vector2_mul(particle^.vel, delta_time));
+    particle^.lifetime = sub[Float](particle^.lifetime, mul[Float](delta_time, 2));
+);
+
+const Particle_draw = (particle :: &Particle) => (
+    Texture_draw(
+        (@current Assets).textures.particle,
+        particle^.pos,
+        particle^.rotation,
+        { .x = 0.5, .y = 0.5 },
+        raylib_Fade(particle^.color, particle^.lifetime),
+    );
+);
+
+const Particles = type ArrayList[Particle];
+
+const Particles_new = () -> Particles => (
+    ArrayList_new[Particle]()
+);
+
+const Particles_update = (particles :: &Particles, delta_time :: Float) => (
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if greater_or_equal[UInt](i, particles^.length) then (
+            unwind loop with ();
+        );
+        Particle_update(ArrayList_index[Particle](particles, i), delta_time);
+        i = add[UInt](i, 1);
+    );
+    ArrayList_retain[Particle](
+        particles,
+        (particle :: Particle) -> Bool => (
+            greater[Float](particle.lifetime, 0)
+        ),
+    );
+);
+
+const Particles_draw = (particles :: &Particles) => (
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if greater_or_equal[UInt](i, particles^.length) then (
+            unwind loop with ();
+        );
+        Particle_draw(ArrayList_index[Particle](particles, i));
+        i = add[UInt](i, 1);
+    );
+);
+
+const spawn_car_exhaust_particle = (car :: &Car) => (
+    let state = &(@current State);
+    let V :: Float = 1;
+    let DV :: Float = 0.5;
+    let particle :: Particle = {
+        .rotation = Angle_from_degrees(random_Float_range(0, 360)),
+        .pos = Vector2_add(
+            car^.pos,
+            Vector2_rotate({ .x = neg[Float](0.6), .y = 0.2 }, car^.rotation),
+        ),
+        .vel = Vector2_add(
+            car^.vel,
+            Vector2_mul(
+                Vector2_add(
+                    Vector2_from_angle(Angle_add(car^.rotation, Angle_from_degrees(180))),
+                    {
+                        .x = random_Float_range(neg[Float](DV), DV),
+                        .y = random_Float_range(neg[Float](DV), DV),
+                    },
+                ),
+                V,
+            ),
+        ),
+        .lifetime = 1,
+        .color = raylib_ColorFromHSV(0, 0, random_Float_range(0.3, 0.5)),
+        .size = 0.1,
+    };
+    ArrayList_push[Particle](&state^.particles, particle);
+);

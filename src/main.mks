@@ -14,6 +14,7 @@ const StateT = struct {
     .intro :: Float,
     .outro :: Float,
     .trails :: Trails,
+    .particles :: Particles,
 };
 
 const ROAD_RADIUS :: Float = 6;
@@ -50,6 +51,7 @@ const init_state = (settings :: Settings) -> StateT => {
     .stats = Stats_new(),
     .fuel = FuelState_new(),
     .trails = Trails_new(),
+    .particles = Particles_new(),
 };
 
 const deinit_state = (state :: StateT) => (
@@ -79,6 +81,7 @@ const update = (delta_time :: Float) => (
     );
     update_honk(delta_time);
     Texticles_update(&state^.texticles, delta_time);
+    Particles_update(&state^.particles, delta_time);
     update_intro_outro(delta_time);
     if state^.player.moved then (
         state^.intro = min[Float](add[Float](state^.intro, delta_time), 1);
@@ -104,6 +107,7 @@ const draw = () => (
     FuelState_draw();
     Car_draw(&state^.player.car, greater_or_equal[Float](state^.player.anger, 1));
     Texticles_draw(&state^.texticles);
+    Particles_draw(&state^.particles);
     draw_megahonk();
     draw_intro_outro();
     raylib_EndMode2D();

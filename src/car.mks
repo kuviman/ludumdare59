@@ -10,6 +10,7 @@ const Car = struct {
     .honk_cooldown :: Float,
     .prev_pos :: Vector2,
     .prev_rotation :: Angle,
+    .next_exhaust_particle :: Float,
 };
 
 const Car_new = (pos :: Vector2) -> Car => {
@@ -27,6 +28,7 @@ const Car_new = (pos :: Vector2) -> Car => {
     .honk_cooldown = 0,
     .prev_pos = { .x = 0, .y = 0 },
     .prev_rotation = Angle_from_degrees(neg[Float](90)),
+    .next_exhaust_particle = 0,
 };
 
 const CAR_STEER_SPEED :: Float = 2;
@@ -41,6 +43,16 @@ const CAR_ANGULAR_ACCELERATION :: Angle = Angle_from_degrees(600);
 const Car_update = (car :: &Car, input :: CarInput, delta_time :: Float) => (
     car^.prev_pos = car^.pos;
     car^.prev_rotation = car^.rotation;
+    car^.next_exhaust_particle = sub[Float](
+        car^.next_exhaust_particle,
+        mul[Float](abs[Float](input.accelerate), delta_time),
+    );
+    if less[Float](car^.next_exhaust_particle, 0) then (
+        spawn_car_exhaust_particle(car);
+        car^.next_exhaust_particle = add[Float](
+            car^.next_exhaust_particle, 0.05
+        );
+    );
     car^.honk_cooldown = sub[Float](car^.honk_cooldown, delta_time);
     let direction = Vector2_from_angle(car^.rotation);
     car^.vel = Vector2_clamp_max_length(
