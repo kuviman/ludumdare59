@@ -22,7 +22,7 @@ const Settings_default = () -> Settings => {
     .fuel_capacity = 30,
 };
 
-const draw_bar = (y :: Float, fill :: Float) => (
+const draw_bar = (y :: Float, fill :: Float, empty_is_red :: Bool) => (
     let camera = @current CameraContext;
     let top_left = raylib_GetScreenToWorld2D(
         { .x = 0, .y = 0 },
@@ -45,7 +45,8 @@ const draw_bar = (y :: Float, fill :: Float) => (
     };
     pos = Vector2_sub(pos, size);
     raylib_DrawRectangleV(pos, size, BLACK);
-    let color = raylib_ColorFromHSV(mul[Float](120, fill), 1, 1);
+    let hue = if empty_is_red then fill else sub[Float](1, fill);
+    let color = raylib_ColorFromHSV(mul[Float](120, hue), 1, 1);
     raylib_DrawRectangleV(
         pos,
         {
@@ -75,9 +76,11 @@ const draw_stats = () => (
     sprint_Int(seconds_digit2);
     draw_text(string_buffer, { .x = 1, .y = 4 }, { .x = 0, .y = 0 }, 2);
     draw_text("fuel", { .x = neg[Float](3), .y = neg[Float](3) }, { .x = 1, .y = 1 }, 2);
-    draw_bar(3, div[Float](state^.player.fuel, state^.settings.fuel_capacity));
-    draw_text("anger", { .x = neg[Float](1), .y = neg[Float](1) }, { .x = 1, .y = 1 }, 2);
-    draw_bar(1, state^.player.anger);
+    draw_bar(3, div[Float](state^.player.fuel, state^.settings.fuel_capacity), true);
+    if not_equal[Float](state^.player.anger, 0) then (
+        draw_text("anger", { .x = neg[Float](1), .y = neg[Float](1) }, { .x = 1, .y = 1 }, 2);
+        draw_bar(1, state^.player.anger, false);
+    );
     if equal[Float](state^.player.anger, 1) then (
         draw_text_premium(
             "Press SPACE",
