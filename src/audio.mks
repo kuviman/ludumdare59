@@ -87,15 +87,19 @@ const update_audio = (delta_time :: Float) => (
     if state^.player.moved then (
         if not(raylib_IsMusicStreamPlaying(radio)) then (
             raylib_PlayMusicStream(radio);
-            raylib_PlayMusicStream(engine);
         );
+    ) else (
+        raylib_StopMusicStream(radio);
+    );
+
+    if @"and"(state^.player.moved, not(state^.player.lost)) then (
         if not(ctx^.played_engine_start) then (
+            raylib_PlayMusicStream(engine);
             play_sound((@current Assets).sfx.start, 0, 1);
             ctx^.played_engine_start = true;
         );
     ) else (
         ctx^.played_engine_start = false;
-        raylib_StopMusicStream(radio);
         raylib_StopMusicStream(engine);
     );
     update_audio_tech();
