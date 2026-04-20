@@ -2,9 +2,13 @@
 
 TODO:
 
+- [ ] fix web fps
+- [ ] emscripten shell html
+- [ ] itch page, ldjam page
+- [ ] Web tire trails (GL_MAX blending need ext in webgl1)
 - [x] Start screen
 - [x] End screen
-- [ ] Tire trails
+- [x] Tire trails
 - [x] Turn signaling
 - [x] VFX for megahonk
 

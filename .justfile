@@ -31,6 +31,7 @@ compile-emscripten:
         -s INITIAL_MEMORY=128MB \
         -s ASSERTIONS \
         -DPLATFORM_WEB
+    # -sMAX_WEBGL_VERSION=2 \
 
 serve-web:
     caddy file-server \
@@ -55,5 +56,5 @@ web:
 
 publish:
     just build-web
-    butler push target/web kuviman/the-jam:html5
+    butler push target/web kuviman/megahonk:html5
 

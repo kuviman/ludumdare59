@@ -64,6 +64,10 @@ const Math_fract = (x :: Float) -> Float => (
     @native "\(x) - (int)\(x)"
 );
 
+const Math_round = (x :: Float) -> Float => (
+    @native "round(\(x))"
+);
+
 const Int_to_Float = (x :: Int) -> Float => (
     @native "(float) \(x)"
 );
@@ -94,4 +98,10 @@ const sqr = [T] (x :: T) -> T => (
 
 const lerp = (a :: Float, b :: Float, t :: Float) -> Float => (
     add[Float](mul[Float](a, sub[Float](1, t)), mul[Float](b, t))
+);
+
+const swap = [T] (a :: &T, b :: &T) => (
+    let t = a^;
+    a^ = b^;
+    b^ = t;
 );

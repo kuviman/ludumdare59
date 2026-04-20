@@ -1,0 +1,125 @@
+const Trails = struct {
+    .current :: RenderTexture,
+    .old :: RenderTexture,
+    .prev_cam_pos :: Vector2,
+};
+
+const Trails_new = () -> Trails => (
+    let SIZE :: Int = 1024;
+    {
+        .current = (
+            let target = raylib_LoadRenderTexture(SIZE, SIZE);
+            raylib_BeginTextureMode(target);
+            raylib_ClearBackground({ .r = 0, .g = 0, .b = 0, .a = 0 });
+            raylib_EndTextureMode();
+            target
+        ),
+        .old = raylib_LoadRenderTexture(SIZE, SIZE),
+        .prev_cam_pos = { .x = 0, .y = 0 },
+    }
+);
+
+const Trails_deinit = (trails :: Trails) => (
+    raylib_UnloadRenderTexture(trails.current);
+    raylib_UnloadRenderTexture(trails.old);
+);
+
+const draw_car_trails = (car :: &Car) => unwindable fn (
+    let direction = Vector2_from_angle(car^.rotation);
+    let normalized_vel = Vector2_div(car^.vel, CAR_MAX_SPEED);
+    let drift = min[Float](abs[Float](Vector2_skew(normalized_vel, direction)), 1);
+    let min_drift :: Float = 0.5;
+    let k = mul[Float](
+        max[Float](0, sub[Float](drift, min_drift)),
+        sub[Float](1, min_drift),
+    );
+    let alpha = Float_to_UInt8(mul[Float](k, 200));
+    if equal[UInt8](alpha, 0) then (
+        unwind fn with ();
+    );
+    let color :: Color = { .r = 0, .g = 0, .b = 0, .a = alpha };
+    let i :: Int = 0;
+    let tire_pos = Vector2_div({ .x = 7, .y = 15 }, PIXELS_PER_UNIT);
+    unwindable loop @loop (
+        if greater_or_equal[Int](i, 4) then (
+            unwind loop with ();
+        );
+        if equal[Int](i, 2) then (
+            tire_pos.x = neg[Float](tire_pos.x);
+        );
+        tire_pos.y = neg[Float](tire_pos.y);
+        let rotated_tire_pos = Vector2_rotate(tire_pos, car^.rotation);
+        let size :: Vector2 = { .x = 0.1, .y = 0.1 };
+        raylib_DrawRectangleV(
+            Vector2_sub(Vector2_add(car^.pos, rotated_tire_pos), Vector2_div(size, 2)),
+            size,
+            color,
+        );
+        i = add[Int](i, 1);
+    );
+);
+
+const draw_all_car_trails = () => (
+    let state = &(@current State);
+    draw_car_trails(&state^.player.car);
+    let i :: UInt = 0;
+    unwindable loop @loop (
+        if greater_or_equal[UInt](i, state^.traffic.cars.length) then (
+            unwind loop with ();
+        );
+        draw_car_trails(&ArrayList_index[TrafficCar](&state^.traffic.cars, i)^.car);
+        i = add[UInt](i, 1);
+    );
+);
+
+const Trails_prepare = () => (
+    let state = &(@current State);
+    let trails = &state^.trails;
+    let new_target :: Vector2 = {
+        .x = div[Float](Math_round(mul[Float](state^.camera.target.x, PIXELS_PER_UNIT)), PIXELS_PER_UNIT),
+        .y = div[Float](Math_round(mul[Float](state^.camera.target.y, PIXELS_PER_UNIT)), PIXELS_PER_UNIT),
+    };
+    swap[RenderTexture](&trails^.old, &trails^.current);
+    raylib_BeginTextureMode(trails^.current);
+    raylib_ClearBackground({ .r = 0, .g = 0, .b = 0, .a = 0 });
+    let fov = div[Float](Int_to_Float(raylib_GetRenderHeight()), PIXELS_PER_UNIT);
+    let camera :: Camera2D = {
+        .offset = {
+            .x = div[Float](Int_to_Float(raylib_GetRenderWidth()), 2),
+            .y = div[Float](Int_to_Float(raylib_GetRenderHeight()), 2),
+        },
+        .target = new_target,
+        .zoom = div[Float](Int_to_Float(raylib_GetRenderHeight()), fov),
+        .rotation = 0,
+    };
+    raylib_BeginMode2D(camera);
+    with DrawTexturesFlippedBecauseRaylibIsFlippingTextures = true;
+    @native "#include <rlgl.h>";
+    @native "BeginBlendMode(BLEND_CUSTOM)";
+    @native "rlSetBlendFactors(RL_ONE, RL_ONE, RL_MAX)";
+    Texture_draw(
+        trails^.old.texture,
+        trails^.prev_cam_pos,
+        Angle_from_degrees(0),
+        { .x = 0.5, .y = 0.5 },
+        WHITE,
+    );
+    draw_all_car_trails();
+    @native "EndBlendMode()";
+    raylib_EndMode2D();
+    raylib_EndTextureMode();
+    trails^.prev_cam_pos = new_target;
+);
+
+const Trails_draw = () => (
+    let state = &(@current State);
+    let trails = &state^.trails;
+    with DrawTexturesFlippedBecauseRaylibIsFlippingTextures = true;
+    Texture_draw(
+        trails^.current.texture,
+        trails^.prev_cam_pos,
+        Angle_from_degrees(0),
+        { .x = 0.5, .y = 0.5 },
+        WHITE,
+    );
+);

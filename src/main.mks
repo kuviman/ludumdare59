@@ -13,6 +13,7 @@ const StateT = struct {
     .fuel :: FuelState,
     .intro :: Float,
     .outro :: Float,
+    .trails :: Trails,
 };
 
 const ROAD_RADIUS :: Float = 6;
@@ -48,7 +49,13 @@ const init_state = (settings :: Settings) -> StateT => {
     .settings = settings,
     .stats = Stats_new(),
     .fuel = FuelState_new(),
+    .trails = Trails_new(),
 };
+
+const deinit_state = (state :: StateT) => (
+    # TODO maybe cleanup other things? :)
+    Trails_deinit(state.trails);
+);
 
 const update = (delta_time :: Float) => (
     let state = &(@current State);
@@ -57,6 +64,7 @@ const update = (delta_time :: Float) => (
         state^.player.fuel = 0;
     );
     if raylib_IsKeyPressed(KEY_R) then (
+        deinit_state(state^);
         state^ = init_state(state^.settings);
     );
     state^.t = add[Float](state^.t, delta_time);
@@ -91,6 +99,7 @@ const draw = () => (
     state^.camera.zoom = div[Float](Int_to_Float(raylib_GetRenderHeight()), fov);
     raylib_BeginMode2D(state^.camera);
     draw_background();
+    Trails_draw();
     Traffic_draw(&state^.traffic);
     FuelState_draw();
     Car_draw(&state^.player.car, greater_or_equal[Float](state^.player.anger, 1));
@@ -103,6 +112,7 @@ const draw = () => (
 
 const frame = () => (
     update(raylib_GetFrameTime());
+    Trails_prepare();
     raylib_BeginDrawing();
     raylib_ClearBackground(BLACK);
     draw();
@@ -118,6 +128,7 @@ const main = () => (
     with AudioContext = init_audio();
     with Assets = load_assets();
     with State = init_state(Settings_default());
+    with DrawTexturesFlippedBecauseRaylibIsFlippingTextures = false;
     play_music((@current Assets).music.traffic, 0.5);
     play_music((@current Assets).music.radio, RADIO_VOLUME);
     play_music((@current Assets).sfx.drift, 0);

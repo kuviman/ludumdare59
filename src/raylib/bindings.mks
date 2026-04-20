@@ -303,3 +303,24 @@ const raylib_Fade = (color :: Color, alpha :: Float) -> Color => (
 const raylib_DrawRectangleV = (pos :: Vector2, size :: Vector2, color :: Color) => (
     @native "DrawRectangleV(\(pos), \(size), \(color))"
 );
+
+@native
+const RenderTexture = struct {
+    .texture :: Texture,
+};
+
+const raylib_LoadRenderTexture = (width :: Int, height :: Int) -> RenderTexture => (
+    @native "LoadRenderTexture(\(width), \(height))"
+);
+
+const raylib_UnloadRenderTexture = (texture :: RenderTexture) => (
+    @native "UnloadRenderTexture(\(texture))"
+);
+
+const raylib_BeginTextureMode = (target :: RenderTexture) => (
+    @native "BeginTextureMode(\(target))"
+);
+
+const raylib_EndTextureMode = () => (
+    @native "EndTextureMode()"
+);

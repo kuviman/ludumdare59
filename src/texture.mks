@@ -32,6 +32,10 @@ const Texture_draw_pro = (
         .x = mul[Float](dest_rect.width, normalized_origin.x),
         .y = mul[Float](dest_rect.height, normalized_origin.y),
     };
+    if @current DrawTexturesFlippedBecauseRaylibIsFlippingTextures then (
+        source_rect.y = add[Float](source_rect.y, source_rect.height);
+        source_rect.height = neg[Float](source_rect.height);
+    );
     raylib_DrawTexturePro(
         texture,
         source_rect,
