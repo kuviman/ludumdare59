@@ -12,6 +12,7 @@ const TextureAssets = struct {
     .cutout_circle :: Texture,
     .left_headlight :: Texture,
     .right_headlight :: Texture,
+    .megahonk :: Texture,
 };
 
 const SoundAssets = struct {
@@ -64,6 +65,7 @@ const load_assets = () -> AssetsT => (
             .cutout_circle = load_texture("assets/textures/cutout_circle.png"),
             .left_headlight = load_texture("assets/textures/left_headlight.png"),
             .right_headlight = load_texture("assets/textures/right_headlight.png"),
+            .megahonk = load_texture("assets/textures/megahonk.png"),
         },
         .sfx = {
             .bonk = raylib_LoadSound("assets/sfx/bonk.wav"),

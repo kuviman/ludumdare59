@@ -95,6 +95,7 @@ const draw = () => (
     FuelState_draw();
     Car_draw(&state^.player.car, greater_or_equal[Float](state^.player.anger, 1));
     Texticles_draw(&state^.texticles);
+    draw_megahonk();
     draw_intro_outro();
     raylib_EndMode2D();
     draw_ui();

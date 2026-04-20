@@ -54,9 +54,21 @@ const player_honk = () => unwindable fn (
     );
 );
 
+const draw_megahonk = () => (
+    let state = &(@current State);
+    Texture_draw_pro(
+        (@current Assets).textures.megahonk,
+        state^.player.car.pos,
+        Angle_from_degrees(mul[Float](state^.t, 360)),
+        { .x = 0.5, .y = 0.5 },
+        add[Float](1, mul[Float](3, sub[Float](1, state^.mega_honking))),
+        { .r = 255, .g = 100, .b = 0, .a = Float_to_UInt8(mul[Float](255, state^.mega_honking)) },
+    );
+);
+
 const update_honk = (delta_time :: Float) => (
     let state = &(@current State);
-    state^.mega_honking = sub[Float](state^.mega_honking, delta_time);
+    state^.mega_honking = max[Float](0, sub[Float](state^.mega_honking, delta_time));
     if greater[Float](state^.mega_honking, 0) then (
         apply_mega_honk_impulse(mul[Float](MEGA_HONK_FORCE, delta_time));
     );

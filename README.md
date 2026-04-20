@@ -6,5 +6,5 @@ TODO:
 - [x] End screen
 - [ ] Tire trails
 - [x] Turn signaling
-- [ ] VFX for megahonk
+- [x] VFX for megahonk
 
