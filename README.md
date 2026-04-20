@@ -1,14 +1,12 @@
-# THE JAM
+# MEGAHONK
 
-TODO:
+Game made for LudumDare 59 in 3 days
 
-- [ ] itch page, ldjam page
-- [x] fix web fps
-- [x] emscripten shell html
-- [x] Web tire trails (GL_MAX blending need ext in webgl1)
-- [x] Start screen
-- [x] End screen
-- [x] Tire trails
-- [x] Turn signaling
-- [x] VFX for megahonk
+**Play at <https://kuviman.itch.io/megahonk>**
 
+![logo](cover2.png)
+
+![screenshot](screenshot.png)
+
+Made with MiniKast - custom programming language,
+ not intended to be written by humans, part of [Kast programming language](https://kast-lang.org).
