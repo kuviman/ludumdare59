@@ -31,8 +31,8 @@ const CAR_DRIFT :: Float = 4;
 const CAR_ACCELERATION :: Float = 4;
 const CAR_AUTO_DECELERATION :: Float = 0.2;
 const CAR_MAX_SPEED :: Float = 5;
-const CAR_MAX_ANGLULAR_SPEED :: Angle = Angle_from_degrees(200);
-const CAR_ANGULAR_ACCELERATION :: Angle = Angle_from_degrees(400);
+const CAR_MAX_ANGLULAR_SPEED :: Angle = Angle_from_degrees(360);
+const CAR_ANGULAR_ACCELERATION :: Angle = Angle_from_degrees(600);
 
 const Car_update = (car :: &Car, input :: CarInput, delta_time :: Float) => (
     car^.honk_cooldown = sub[Float](car^.honk_cooldown, delta_time);
