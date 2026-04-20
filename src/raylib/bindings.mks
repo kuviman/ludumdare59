@@ -85,6 +85,9 @@ const KeyboardKey = @opaque_type;
 const Key = type KeyboardKey;
 
 @native
+const KEY_BACKSPACE :: Key;
+
+@native
 const KEY_RIGHT :: Key;
 
 @native

@@ -3,7 +3,7 @@
 TODO:
 
 - [x] Start screen
-- [ ] End screen
+- [x] End screen
 - [ ] Tire trails
 - [x] Turn signaling
 - [ ] VFX for megahonk

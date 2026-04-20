@@ -52,23 +52,31 @@ const init_state = (settings :: Settings) -> StateT => {
 
 const update = (delta_time :: Float) => (
     let state = &(@current State);
+    let finished = greater_or_equal[Float](state^.outro, 1);
+    if raylib_IsKeyPressed(KEY_BACKSPACE) then (
+        state^.player.fuel = 0;
+    );
     if raylib_IsKeyPressed(KEY_R) then (
         state^ = init_state(state^.settings);
     );
     state^.t = add[Float](state^.t, delta_time);
-    update_camera(delta_time);
-    Traffic_update(&state^.traffic, delta_time);
-    Player_update(delta_time);
-    update_physics(delta_time);
-    if raylib_IsKeyPressed(KEY_SPACE) then (
-        player_honk();
+    if not(finished) then (
+        update_camera(delta_time);
+        Traffic_update(&state^.traffic, delta_time);
+        Player_update(delta_time);
+        update_physics(delta_time);
+        if raylib_IsKeyPressed(KEY_SPACE) then (
+            player_honk();
+        );
     );
     update_honk(delta_time);
     Texticles_update(&state^.texticles, delta_time);
     update_intro_outro(delta_time);
     if state^.player.moved then (
         state^.intro = min[Float](add[Float](state^.intro, delta_time), 1);
-        state^.stats.time = add[Float](state^.stats.time, delta_time);
+        if not(finished) then (
+            state^.stats.time = add[Float](state^.stats.time, delta_time);
+        );
     );
     FuelState_update(delta_time);
     state^.stats.distance = neg[Float](state^.player.car.pos.y);

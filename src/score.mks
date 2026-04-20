@@ -2,12 +2,18 @@ const Stats = struct {
     .distance :: Float,
     .time :: Float,
     .damage :: Float,
+    .honked :: Int,
+    .megahonked :: Int,
+    .fuel_collected :: Int,
 };
 
 const Stats_new = () -> Stats => {
     .damage = 0,
     .distance = 0,
     .time = 0,
+    .honked = 0,
+    .megahonked = 0,
+    .fuel_collected = 0,
 };
 
 const Settings = struct {
@@ -47,6 +53,7 @@ const draw_bar = (y :: Float, fill :: Float, empty_is_red :: Bool) => (
     raylib_DrawRectangleV(pos, size, BLACK);
     let hue = if empty_is_red then fill else sub[Float](1, fill);
     let color = raylib_ColorFromHSV(mul[Float](120, hue), 1, 1);
+    color.a = Float_to_UInt8(mul[Float](255, sub[Float](1, (@current State).outro)));
     raylib_DrawRectangleV(
         pos,
         {
@@ -59,10 +66,17 @@ const draw_bar = (y :: Float, fill :: Float, empty_is_red :: Bool) => (
 
 const draw_stats = () => (
     let state = &(@current State);
+    let final_stats_color :: Color = {
+        .r = 255,
+        .g = 255,
+        .b = 255,
+        .a = Float_to_UInt8(mul[Float](state^.outro, 255)),
+    };
     sprint_reset();
     sprint_String("Distance: ");
     sprint_Int(Float_to_Int(state^.stats.distance));
     draw_text(string_buffer, { .x = 1, .y = 1 }, { .x = 0, .y = 0 }, 3, BLACK);
+    draw_text(string_buffer, { .x = 0, .y = neg[Float](15) }, { .x = 0.5, .y = 0.5 }, 3, final_stats_color);
     sprint_reset();
     sprint_String("Time: ");
     let seconds = Float_to_Int(state^.stats.time);
@@ -75,6 +89,7 @@ const draw_stats = () => (
     sprint_Int(seconds_digit1);
     sprint_Int(seconds_digit2);
     draw_text(string_buffer, { .x = 1, .y = 4 }, { .x = 0, .y = 0 }, 2, BLACK);
+    draw_text(string_buffer, { .x = 0, .y = neg[Float](12) }, { .x = 0.5, .y = 0.5 }, 2, final_stats_color);
     draw_text("fuel", { .x = neg[Float](3), .y = neg[Float](3) }, { .x = 1, .y = 1 }, 2, BLACK);
     draw_bar(3, div[Float](state^.player.fuel, state^.settings.fuel_capacity), true);
     if not_equal[Float](state^.player.anger, 0) then (
@@ -91,4 +106,32 @@ const draw_stats = () => (
             BLACK,
         );
     );
+    sprint_reset();
+    sprint_String("avg speed: ");
+    sprint_Float(div[Float](state^.stats.distance, state^.stats.time));
+    draw_text(string_buffer, { .x = 0, .y = neg[Float](10) }, { .x = 0.5, .y = 0.5 }, 1, final_stats_color);
+    sprint_reset();
+    sprint_String("honks: ");
+    sprint_Int(state^.stats.honked);
+    draw_text(string_buffer, { .x = 0, .y = neg[Float](9) }, { .x = 0.5, .y = 0.5 }, 1, final_stats_color);
+    sprint_reset();
+    sprint_String("MEGAHONKS: ");
+    sprint_Int(state^.stats.megahonked);
+    draw_text(string_buffer, { .x = 0, .y = neg[Float](8) }, { .x = 0.5, .y = 0.5 }, 1, final_stats_color);
+    sprint_reset();
+    sprint_String("damage: ");
+    sprint_Int(Float_to_Int(state^.stats.damage));
+    draw_text(string_buffer, { .x = 0, .y = neg[Float](7) }, { .x = 0.5, .y = 0.5 }, 1, final_stats_color);
+    sprint_reset();
+    sprint_String("fuel collected: ");
+    sprint_Int(state^.stats.fuel_collected);
+    draw_text(string_buffer, { .x = 0, .y = neg[Float](6) }, { .x = 0.5, .y = 0.5 }, 1, final_stats_color);
+
+    draw_text("Press R to restart", { .x = 0, .y = neg[Float](2) }, { .x = 0.5, .y = 0.5 }, 3, final_stats_color);
+    draw_text("MEGAHONK", { .x = 0, .y = 5 }, { .x = 0.5, .y = 0.5 }, 5, final_stats_color);
+    draw_text("kuviman (programming)", { .x = 0, .y = 9 }, { .x = 0.5, .y = 0.5 }, 2, final_stats_color);
+    draw_text("Brainoid (sfx & music)", { .x = 0, .y = 11 }, { .x = 0.5, .y = 0.5 }, 2, final_stats_color);
+    draw_text("made with MiniKast btw", { .x = 0, .y = 13 }, { .x = 0.5, .y = 0.5 }, 1.5, final_stats_color);
+    draw_text("(custom programming language)", { .x = 0, .y = 14.5 }, { .x = 0.5, .y = 0.5 }, 1.5, final_stats_color);
+    draw_text("and raylib", { .x = 0, .y = 16 }, { .x = 0.5, .y = 0.5 }, 1.5, final_stats_color);
 );

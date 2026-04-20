@@ -47,7 +47,9 @@ const player_honk = () => unwindable fn (
             },
         );
         state^.player.anger = 0;
+        state^.stats.megahonked = add[Int](state^.stats.megahonked, 1);
     ) else (
+        state^.stats.honked = add[Int](state^.stats.honked, 1);
         do_honk(&state^.player.car);
     );
 );

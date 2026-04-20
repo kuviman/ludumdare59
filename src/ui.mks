@@ -74,6 +74,15 @@ const sprint_Int = (x :: Int) => (
     string_buffer.length = add[UInt](string_buffer.length, written);
 );
 
+const sprint_Float = (x :: Float) => (
+    let written :: UInt = @native ''
+        sprintf(
+            \(string_buffer.contents)+ \(string_buffer.length),
+            \"%.2f\", \(x)
+        )'';
+    string_buffer.length = add[UInt](string_buffer.length, written);
+);
+
 const sprint_String = (s :: String) => (
     let written :: UInt = @native ''
         sprintf(

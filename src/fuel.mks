@@ -24,6 +24,7 @@ const FuelCan_retain = (can :: FuelCan) -> Bool => unwindable fn (
             state^.settings.fuel_capacity,
         );
         play_sound((@current Assets).sfx.fuel_pickup, 0.1, 1);
+        state^.stats.fuel_collected = add[Int](state^.stats.fuel_collected, 1);
         unwind fn with false;
     );
     less[Float](abs[Float](sub[Float](state^.player.car.pos.y, can.pos.y)), add[Float](TRAFFIC_SPAWN_DISTANCE, 3))

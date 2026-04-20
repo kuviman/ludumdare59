@@ -3,6 +3,7 @@ const Car_apply_impulse = (car :: &Car, impulse :: Vector2, do_sound :: Bool) =>
     car^.vel = Vector2_add(car^.vel, impulse);
     let intensity = mul[Float](Vector2_length(impulse), 0.5);
     if car^.is_player then (
+        state^.stats.damage = add[Float](state^.stats.damage, intensity);
         state^.screen_shake = max[Float](
             state^.screen_shake,
             intensity,
