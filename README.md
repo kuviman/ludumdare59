@@ -2,6 +2,8 @@
 
 Game made for LudumDare 59 in 3 days
 
+ldjam page: <https://ldjam.com/events/ludum-dare/59/megahonk>
+
 **Play at <https://kuviman.itch.io/megahonk>**
 
 ![logo](cover2.png)
