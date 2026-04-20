@@ -46,6 +46,7 @@ const play_sound = (
     pitch_range :: Float,
     volume :: Float,
 ) => unwindable fn (
+    volume = mul[Float](volume, sub[Float](1, (@current State).outro));
     if less[Float](volume, 0.1) then (
         unwind fn with ();
     );
@@ -71,6 +72,7 @@ const play_sound = (
 );
 
 const GLOBAL_MUSIC_VOLUME :: Float = 1;
+const RADIO_VOLUME :: Float = 0.7;
 
 const play_music = (music :: Music, volume :: Float) => (
     let ctx = &(@current AudioContext);
@@ -88,6 +90,7 @@ const update_audio = (delta_time :: Float) => (
         if not(raylib_IsMusicStreamPlaying(radio)) then (
             raylib_PlayMusicStream(radio);
         );
+        raylib_SetMusicVolume(radio, mul[Float](RADIO_VOLUME, sub[Float](1, state^.outro)));
     ) else (
         raylib_StopMusicStream(radio);
     );

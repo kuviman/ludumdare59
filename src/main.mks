@@ -110,7 +110,7 @@ const main = () => (
     with Assets = load_assets();
     with State = init_state(Settings_default());
     play_music((@current Assets).music.traffic, 0.5);
-    play_music((@current Assets).music.radio, 0.5);
+    play_music((@current Assets).music.radio, RADIO_VOLUME);
     play_music((@current Assets).sfx.drift, 0);
     play_music((@current Assets).sfx.engine, 0);
     main_loop(frame);
