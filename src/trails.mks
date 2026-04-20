@@ -54,11 +54,25 @@ const draw_car_trails = (car :: &Car) => unwindable fn (
             tire_pos.x = neg[Float](tire_pos.x);
         );
         tire_pos.y = neg[Float](tire_pos.y);
-        let rotated_tire_pos = Vector2_rotate(tire_pos, car^.rotation);
-        let size :: Vector2 = { .x = 0.1, .y = 0.1 };
-        raylib_DrawRectangleV(
-            Vector2_sub(Vector2_add(car^.pos, rotated_tire_pos), Vector2_div(size, 2)),
-            size,
+        let radius :: Float = 0.08;
+        raylib_DrawCircleV(
+            Vector2_add(
+                car^.pos,
+                Vector2_rotate(tire_pos, car^.rotation),
+            ),
+            radius,
+            color,
+        );
+        raylib_DrawLineEx(
+            Vector2_add(
+                car^.pos,
+                Vector2_rotate(tire_pos, car^.rotation),
+            ),
+            Vector2_add(
+                car^.prev_pos,
+                Vector2_rotate(tire_pos, car^.prev_rotation),
+            ),
+            mul[Float](radius, 2),
             color,
         );
         i = add[Int](i, 1);

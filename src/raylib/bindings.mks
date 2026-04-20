@@ -304,6 +304,14 @@ const raylib_DrawRectangleV = (pos :: Vector2, size :: Vector2, color :: Color) 
     @native "DrawRectangleV(\(pos), \(size), \(color))"
 );
 
+const raylib_DrawCircleV = (pos :: Vector2, radius :: Float, color :: Color) => (
+    @native "DrawCircleV(\(pos), \(radius), \(color))"
+);
+
+const raylib_DrawLineEx = (start :: Vector2, end :: Vector2, thick :: Float, color :: Color) => (
+    @native "DrawLineEx(\(start), \(end), \(thick), \(color))"
+);
+
 @native
 const RenderTexture = struct {
     .texture :: Texture,
