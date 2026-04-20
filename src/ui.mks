@@ -3,8 +3,9 @@ const draw_text = (
     pos :: Vector2,
     align :: Vector2,
     size :: Float,
+    color :: Color,
 ) => (
-    draw_text_premium(text, pos, align, size, 1);
+    draw_text_premium(text, pos, align, size, 1, color);
 );
 
 const draw_text_premium = (
@@ -13,6 +14,7 @@ const draw_text_premium = (
     align :: Vector2,
     size :: Float,
     scale :: Float,
+    color :: Color,
 ) => (
     let camera = @current CameraContext;
     let top_left = raylib_GetScreenToWorld2D(
@@ -50,7 +52,7 @@ const draw_text_premium = (
         0,
         font_size,
         spacing,
-        BLACK,
+        color,
     );
 );
 
@@ -96,7 +98,13 @@ const draw_ui = () => (
     if state^.player.moved then (
         draw_stats();
     ) else (
-        draw_text("WASD/Arrow keys", { .x = 0, .y = neg[Float](4) }, { .x = 0.5, .y = 0.5 }, 3);
+        draw_text(
+            "WASD/Arrow keys",
+            { .x = 0, .y = neg[Float](12) },
+            { .x = 0.5, .y = 0.5 },
+            5,
+            WHITE,
+        );
     );
     raylib_EndMode2D();
 );

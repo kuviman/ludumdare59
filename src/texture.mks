@@ -5,6 +5,17 @@ const Texture_draw = (
     normalized_origin :: Vector2,
     tint :: Color,
 ) => (
+    Texture_draw_pro(texture, pos, rotation, normalized_origin, 1, tint)
+);
+
+const Texture_draw_pro = (
+    texture :: Texture,
+    pos :: Vector2,
+    rotation :: Angle,
+    normalized_origin :: Vector2,
+    scale :: Float,
+    tint :: Color,
+) => (
     let source_rect :: Rectangle = {
         .x = 0,
         .y = 0,
@@ -14,8 +25,8 @@ const Texture_draw = (
     let dest_rect :: Rectangle = {
         .x = pos.x,
         .y = pos.y,
-        .width = div[Float](source_rect.width, PIXELS_PER_UNIT),
-        .height = div[Float](source_rect.height, PIXELS_PER_UNIT),
+        .width = mul[Float](div[Float](source_rect.width, PIXELS_PER_UNIT), scale),
+        .height = mul[Float](div[Float](source_rect.height, PIXELS_PER_UNIT), scale),
     };
     let origin :: Vector2 = {
         .x = mul[Float](dest_rect.width, normalized_origin.x),

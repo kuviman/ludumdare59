@@ -1,6 +1,9 @@
 # THE JAM
 
-- Time
-- Health
-- Fuel
-- Distance traveled
+TODO:
+
+- [ ] Start screen
+- [ ] Tire trails
+- [ ] Turn signaling
+- [ ] End screen
+

@@ -62,7 +62,7 @@ const draw_stats = () => (
     sprint_reset();
     sprint_String("Distance: ");
     sprint_Int(Float_to_Int(state^.stats.distance));
-    draw_text(string_buffer, { .x = 1, .y = 1 }, { .x = 0, .y = 0 }, 3);
+    draw_text(string_buffer, { .x = 1, .y = 1 }, { .x = 0, .y = 0 }, 3, BLACK);
     sprint_reset();
     sprint_String("Time: ");
     let seconds = Float_to_Int(state^.stats.time);
@@ -74,11 +74,11 @@ const draw_stats = () => (
     sprint_String(":");
     sprint_Int(seconds_digit1);
     sprint_Int(seconds_digit2);
-    draw_text(string_buffer, { .x = 1, .y = 4 }, { .x = 0, .y = 0 }, 2);
-    draw_text("fuel", { .x = neg[Float](3), .y = neg[Float](3) }, { .x = 1, .y = 1 }, 2);
+    draw_text(string_buffer, { .x = 1, .y = 4 }, { .x = 0, .y = 0 }, 2, BLACK);
+    draw_text("fuel", { .x = neg[Float](3), .y = neg[Float](3) }, { .x = 1, .y = 1 }, 2, BLACK);
     draw_bar(3, div[Float](state^.player.fuel, state^.settings.fuel_capacity), true);
     if not_equal[Float](state^.player.anger, 0) then (
-        draw_text("anger", { .x = neg[Float](1), .y = neg[Float](1) }, { .x = 1, .y = 1 }, 2);
+        draw_text("anger", { .x = neg[Float](1), .y = neg[Float](1) }, { .x = 1, .y = 1 }, 2, BLACK);
         draw_bar(1, state^.player.anger, false);
     );
     if equal[Float](state^.player.anger, 1) then (
@@ -88,6 +88,7 @@ const draw_stats = () => (
             { .x = 1, .y = 1 },
             1.5,
             add[Float](1, mul[Float](0.15, Math_sin(mul[Float](state^.t, 3)))),
+            BLACK,
         );
     );
 );

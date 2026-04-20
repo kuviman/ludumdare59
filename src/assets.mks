@@ -9,6 +9,7 @@ const TextureAssets = struct {
     .road_border :: Texture,
     .grass :: Texture,
     .fuel :: Texture,
+    .cutout_circle :: Texture,
 };
 
 const SoundAssets = struct {
@@ -58,6 +59,7 @@ const load_assets = () -> AssetsT => (
             .grass = load_repeated_texture("assets/textures/grass.png"),
             .player_icon = load_texture("assets/textures/player_icon.png"),
             .fuel = load_texture("assets/textures/fuel.png"),
+            .cutout_circle = load_texture("assets/textures/cutout_circle.png"),
         },
         .sfx = {
             .bonk = raylib_LoadSound("assets/sfx/bonk.wav"),

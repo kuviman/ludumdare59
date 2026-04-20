@@ -83,3 +83,7 @@ const @"or" = (a :: Bool, b :: Bool) -> Bool => (
 const sqr = [T] (x :: T) -> T => (
     mul[T](x, x)
 );
+
+const lerp = (a :: Float, b :: Float, t :: Float) -> Float => (
+    add[Float](mul[Float](a, sub[Float](1, t)), mul[Float](b, t))
+);

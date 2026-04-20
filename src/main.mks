@@ -11,11 +11,13 @@ const StateT = struct {
     .settings :: Settings,
     .stats :: Stats,
     .fuel :: FuelState,
+    .intro :: Float,
 };
 
 const ROAD_RADIUS :: Float = 6;
 
 const init_state = (settings :: Settings) -> StateT => {
+    .intro = 0,
     .camera = {
         .offset = { .x = 0, .y = 0 },
         .target = { .x = 0, .y = 0 },
@@ -62,6 +64,7 @@ const update = (delta_time :: Float) => (
     update_honk(delta_time);
     Texticles_update(&state^.texticles, delta_time);
     if state^.player.moved then (
+        state^.intro = min[Float](add[Float](state^.intro, delta_time), 1);
         state^.stats.time = add[Float](state^.stats.time, delta_time);
     );
     FuelState_update(delta_time);
@@ -73,13 +76,24 @@ const draw = () => (
     let state = &(@current State);
     state^.camera.offset.x = div[Float](Int_to_Float(raylib_GetRenderWidth()), 2);
     state^.camera.offset.y = div[Float](Int_to_Float(raylib_GetRenderHeight()), 2);
-    state^.camera.zoom = div[Float](Int_to_Float(raylib_GetRenderHeight()), state^.fov);
+    let fov = lerp(5, state^.fov, state^.intro);
+    state^.camera.zoom = div[Float](Int_to_Float(raylib_GetRenderHeight()), fov);
     raylib_BeginMode2D(state^.camera);
     draw_background();
     Traffic_draw(&state^.traffic);
     FuelState_draw();
     Car_draw(&state^.player.car);
     Texticles_draw(&state^.texticles);
+    if less[Float](state^.intro, 1) then (
+        Texture_draw_pro(
+            (@current Assets).textures.cutout_circle,
+            { .x = 0, .y = 0 },
+            Angle_from_degrees(0),
+            { .x = 0.5, .y = 0.5 },
+            add[Float](1, mul[Float](sqr[Float](state^.intro), 15)),
+            BLACK,
+        );
+    );
     raylib_EndMode2D();
     draw_ui();
 );
