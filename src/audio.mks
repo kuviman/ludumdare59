@@ -5,11 +5,16 @@ const CameraContext = @context Camera2D;
 const AudioContextT = struct {
     .sound_effects :: ArrayList[Sound],
     .musics :: ArrayList[Music],
+    .played_engine_start :: Bool,
 };
 
 const init_audio = () -> AudioContextT => (
     raylib_InitAudioDevice();
-    { .sound_effects = ArrayList_new[Sound]() }
+    {
+        .sound_effects = ArrayList_new[Sound](),
+        .musics = ArrayList_new[Music](),
+        .played_engine_start = false,
+    }
 );
 
 const AudioContext = @context AudioContextT;
@@ -74,7 +79,29 @@ const play_music = (music :: Music, volume :: Float) => (
     ArrayList_push[Music](&ctx^.musics, music);
 );
 
-const update_audio = () => (
+const update_audio = (delta_time :: Float) => (
+    let ctx = &(@current AudioContext);
+    let state = &(@current State);
+    let radio = (@current Assets).music.radio;
+    let engine = (@current Assets).sfx.engine;
+    if state^.player.moved then (
+        if not(raylib_IsMusicStreamPlaying(radio)) then (
+            raylib_PlayMusicStream(radio);
+            raylib_PlayMusicStream(engine);
+        );
+        if not(ctx^.played_engine_start) then (
+            play_sound((@current Assets).sfx.start, 0, 1);
+            ctx^.played_engine_start = true;
+        );
+    ) else (
+        ctx^.played_engine_start = false;
+        raylib_StopMusicStream(radio);
+        raylib_StopMusicStream(engine);
+    );
+    update_audio_tech();
+);
+
+const update_audio_tech = () => (
     let ctx = &(@current AudioContext);
     let i :: UInt = 0;
     unwindable loop @loop (

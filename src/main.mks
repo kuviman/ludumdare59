@@ -15,39 +15,36 @@ const StateT = struct {
 
 const ROAD_RADIUS :: Float = 6;
 
-const init_state = (settings :: Settings) -> StateT => (
-    play_sound((@current Assets).sfx.start, 0, 1);
-    {
-        .camera = {
-            .offset = { .x = 0, .y = 0 },
-            .target = { .x = 0, .y = 0 },
-            .rotation = 0,
-            .zoom = 1,
-        },
-        .t = 0,
-        .mega_honking = 0,
-        .camera_target = { .x = 0, .y = 0 },
-        .screen_shake = 0,
-        .fov = 10,
-        .traffic = Traffic_new(),
-        .player = (
-            let car = Car_new({ .x = 0, .y = 0 });
-            car.tint = RED;
-            car.is_player = true;
-            {
-                .car = car,
-                .fuel = settings.fuel_capacity,
-                .anger = 0,
-                .lost = false,
-                .played_megahonk_ready = false,
-            }
-        ),
-        .texticles = Texticles_new(),
-        .settings = settings,
-        .stats = Stats_new(),
-        .fuel = FuelState_new(),
-    }
-);
+const init_state = (settings :: Settings) -> StateT => {
+    .camera = {
+        .offset = { .x = 0, .y = 0 },
+        .target = { .x = 0, .y = 0 },
+        .rotation = 0,
+        .zoom = 1,
+    },
+    .t = 0,
+    .mega_honking = 0,
+    .camera_target = { .x = 0, .y = 0 },
+    .screen_shake = 0,
+    .fov = 10,
+    .traffic = Traffic_new(),
+    .player = (
+        let car = Car_new({ .x = 0, .y = 0 });
+        car.tint = RED;
+        car.is_player = true;
+        {
+            .car = car,
+            .fuel = settings.fuel_capacity,
+            .anger = 0,
+            .lost = false,
+            .played_megahonk_ready = false,
+        }
+    ),
+    .texticles = Texticles_new(),
+    .settings = settings,
+    .stats = Stats_new(),
+    .fuel = FuelState_new(),
+};
 
 const update = (delta_time :: Float) => (
     let state = &(@current State);
@@ -69,6 +66,7 @@ const update = (delta_time :: Float) => (
     );
     FuelState_update(delta_time);
     state^.stats.distance = neg[Float](state^.player.car.pos.y);
+    update_audio(delta_time);
 );
 
 const draw = () => (
@@ -87,7 +85,6 @@ const draw = () => (
 );
 
 const frame = () => (
-    update_audio();
     update(raylib_GetFrameTime());
     raylib_BeginDrawing();
     raylib_ClearBackground(BLACK);

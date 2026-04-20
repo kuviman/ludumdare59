@@ -216,6 +216,14 @@ const raylib_PlayMusicStream = (music :: Music) => (
     @native "PlayMusicStream(\(music))"
 );
 
+const raylib_StopMusicStream = (music :: Music) => (
+    @native "StopMusicStream(\(music))"
+);
+
+const raylib_IsMusicStreamPlaying = (music :: Music) -> Bool => (
+    @native "IsMusicStreamPlaying(\(music))"
+);
+
 const raylib_UpdateMusicStream = (music :: Music) => (
     @native "UpdateMusicStream(\(music))"
 );
