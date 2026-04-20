@@ -129,7 +129,7 @@ const draw_stats = () => (
 
     draw_text("Press R to restart", { .x = 0, .y = neg[Float](2) }, { .x = 0.5, .y = 0.5 }, 3, final_stats_color);
     draw_text("MEGAHONK", { .x = 0, .y = 5 }, { .x = 0.5, .y = 0.5 }, 5, final_stats_color);
-    draw_text("kuviman (programming)", { .x = 0, .y = 9 }, { .x = 0.5, .y = 0.5 }, 2, final_stats_color);
+    draw_text("kuviman (programming & art)", { .x = 0, .y = 9 }, { .x = 0.5, .y = 0.5 }, 2, final_stats_color);
     draw_text("Brainoid (sfx & music)", { .x = 0, .y = 11 }, { .x = 0.5, .y = 0.5 }, 2, final_stats_color);
     draw_text("made with MiniKast btw", { .x = 0, .y = 13 }, { .x = 0.5, .y = 0.5 }, 1.5, final_stats_color);
     draw_text("(custom programming language)", { .x = 0, .y = 14.5 }, { .x = 0.5, .y = 0.5 }, 1.5, final_stats_color);
