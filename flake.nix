@@ -22,7 +22,16 @@
             gcc
             clang
             # boehmgc
-            raylib
+            (raylib.overrideAttrs (oa: {
+              version = "6.0";
+              src = fetchFromGitHub {
+                owner = "raysan5";
+                repo = "raylib";
+                rev = "72a341a37fbd9ccc1d8ec284ff20aeb5b991ad75";
+                hash = "sha256-NEWR8BLRlCHZmg3T0BDcvDcAqAUSx0ooeehwaRpqfcg=";
+              };
+              propagatedBuildInputs = oa.propagatedBuildInputs ++ [ libxrandr ];
+            }))
             emscripten
             caddy
             butler
