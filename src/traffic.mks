@@ -38,7 +38,7 @@ const Car_is_in_front = (car :: &TrafficCar, other :: &Car) -> Bool => (
 );
 
 const TrafficCar_update = (car :: &TrafficCar, delta_time :: Float) => (
-    let state = &(@current State);
+    let state = &@context.State;
     let until_target = sub[Float](car^.car.pos.y, car^.target.y);
     if less[Float](until_target, 1) then (
         let DX :: Float = sub[Float](ROAD_RADIUS, CAR_RADIUS);
